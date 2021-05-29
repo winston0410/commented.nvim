@@ -42,15 +42,13 @@ local function toggle_comment()
 
     local comment_start_symbol, comment_end_symbol = get_comment_wrap()
 
-	print('check symbol', comment_start_symbol, comment_end_symbol)
-
-	local pattern = "^" .. comment_start_symbol .. "[^%s*]" .. comment_end_symbol
+	local pattern = helper.escape_symbols(comment_start_symbol) .. "[^%s*]" .. helper.escape_symbols(comment_end_symbol)
 
 	print('check pattern', pattern)
 
     for _, line in ipairs(lines) do
-        print('line match?', string.match(line, "^%-%-[^%s*]"))
-        if not line:match("^%-%-[^%s*]") then
+        print('line match?', string.match(line, pattern))
+        if not line:match(pattern) then
             print('should comment lines')
             shouldComment = true
             break
