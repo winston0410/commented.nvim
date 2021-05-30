@@ -1,27 +1,39 @@
 local helper = require("commented.helper")
+local opts = {comment_padding = " "}
 
-local function comment_line(lines, start_line, end_line, start_symbol,
-                            end_symbol)
+local function commenting_lines(lines, start_line, end_line, start_symbol,
+                                end_symbol)
     local commented_lines = helper.map(lines, function(line)
-        print('check lines', line)
-        -- Find first non whitespace character, and prepend comment_line
-        return start_symbol .. line .. end_symbol
+        local commented_line = line:gsub("([^%s])", start_symbol ..
+                                             opts.comment_padding .. "%1", 1)
+        if end_symbol ~= "" then
+            commented_line = commented_line .. opts.comment_padding ..
+                                 end_symbol
+        end
+
+        return commented_line
     end)
 
     vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
 end
 
-local function uncomment_line(lines, start_line, end_line, start_symbol,
-                              end_symbol)
+local function uncommenting_lines(lines, start_line, end_line, start_symbol,
+                                  end_symbol)
     local uncommented_lines = helper.map(lines, function(line)
-        return line:gsub("%-%-", "")
+        local uncommented_line = line:gsub(start_symbol .. opts.comment_padding,
+                                           "")
+        if end_symbol ~= "" then
+            uncommented_line = uncommenting_lines:gsub(
+                                   end_symbol .. opts.comment_padding, "")
+        end
+        return uncommented_line
     end)
+
+    print('check uncommented_lines', vim.inspect(uncommented_lines))
 
     vim.api
         .nvim_buf_set_lines(0, start_line, end_line, false, uncommented_lines)
 end
-
-local opts = {}
 
 local function get_comment_wrap()
     local cs = vim.api.nvim_buf_get_option(0, 'commentstring')
@@ -50,12 +62,13 @@ local function toggle_comment(mode)
     local shouldComment = false
 
     local comment_start_symbol, comment_end_symbol = get_comment_wrap()
+    local escaped_start_symbol, escaped_end_symbol =
+        helper.escape_symbols(comment_start_symbol),
+        helper.escape_symbols(comment_end_symbol)
 
-    local pattern = helper.escape_symbols(comment_start_symbol) .. "[^%s*]" ..
-                        helper.escape_symbols(comment_end_symbol)
+    local pattern = escaped_start_symbol .. ".*" .. escaped_end_symbol
 
     for _, line in ipairs(lines) do
-        print('line match?', string.match(line, pattern))
         if not line:match(pattern) then
             shouldComment = true
             break
@@ -63,14 +76,12 @@ local function toggle_comment(mode)
     end
 
     if shouldComment then
-        comment_line(lines, start_line, end_line, comment_start_symbol,
-                     comment_end_symbol)
+        commenting_lines(lines, start_line, end_line, comment_start_symbol,
+                         comment_end_symbol)
     else
-        uncomment_line(lines, start_line, end_line, comment_start_symbol,
-                       comment_end_symbol)
+        uncommenting_lines(lines, start_line, end_line, escaped_start_symbol,
+                           escaped_end_symbol)
     end
-
-    -- print('check commented lines', vim.inspect(commented_lines))
 end
 
 local function setup()
