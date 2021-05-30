@@ -14,6 +14,8 @@ local function commenting_lines(lines, start_line, end_line, start_symbol,
         return commented_line
     end)
 
+    print('check commented_line', vim.inspect(commented_lines))
+
     vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
 end
 
@@ -82,9 +84,15 @@ local function toggle_comment(mode)
         uncommenting_lines(lines, start_line, end_line, escaped_start_symbol,
                            escaped_end_symbol)
     end
+
+    if mode == 'v' then
+        vim.cmd "stopinsert"
+    end
+
 end
 
-local function setup()
+local function setup(user_opts)
+    opts = vim.tbl_extend('force', opts, user_opts or {})
     local supported_modes = {'n', 'v'}
     for _, mode in ipairs(supported_modes) do
         vim.api.nvim_set_keymap(mode, '<leader>/',
