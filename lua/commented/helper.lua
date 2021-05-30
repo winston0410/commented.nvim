@@ -1,9 +1,9 @@
 local function map(table, callback)
-    local newTable = {}
+    local new_table = {}
     for index, value in ipairs(table) do
-        newTable[index] = callback(value, index)
+        new_table[index] = callback(value, index)
     end
-    return newTable
+    return new_table
 end
 
 local target_symbols = "[%^%$%(%)%%%.%[%]%*%+%-%?]"
@@ -25,7 +25,6 @@ local replacement_table = {
 
 local function escape_symbols(symbols)
     local results = symbols:gsub(target_symbols, replacement_table)
-    print('check results', results)
     return results
 end
 
