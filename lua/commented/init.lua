@@ -1,8 +1,8 @@
 local helper = require("commented.helper")
 local opts = {
     comment_padding = " ",
-    keybinding = {n = "<leader>c", v = "<leader>c"},
-	default_keybinding = true
+    keybindings = {n = "<leader>c", v = "<leader>c"},
+    set_keybindings = true
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol,
@@ -18,8 +18,6 @@ local function commenting_lines(lines, start_line, end_line, start_symbol,
         return commented_line
     end)
 
-    -- print('check commented_line', vim.inspect(commented_lines))
-
     vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
 end
 
@@ -34,8 +32,6 @@ local function uncommenting_lines(lines, start_line, end_line, start_symbol,
         end
         return uncommented_line
     end)
-
-    -- print('check uncommented_lines', vim.inspect(uncommented_lines))
 
     vim.api
         .nvim_buf_set_lines(0, start_line, end_line, false, uncommented_lines)
@@ -57,8 +53,13 @@ local function get_lines(mode)
         local count = vim.v.count == 0 and 0 or vim.v.count - 1
         start_line, end_line = current_line - 1, current_line + count
     else
-        start_line, end_line = vim.fn.line("v") - 1, current_line
+        start_line, end_line = vim.fn.line("v"), current_line
+        if start_line > end_line then
+            start_line, end_line = end_line, start_line
+        end
+		start_line = start_line - 1
     end
+
     return start_line, end_line
 end
 
@@ -91,16 +92,16 @@ local function toggle_comment(mode)
                            escaped_end_symbol)
     end
 
-    if mode == 'v' then vim.cmd "stopinsert" end
+    if mode == 'v' then vim.api.nvim_input("<esc>") end
 
 end
 
 local function setup(user_opts)
     opts = vim.tbl_extend('force', opts, user_opts or {})
     local supported_modes = {'n', 'v'}
-    if opts.default_keybinding then
+    if opts.set_keybindings then
         for _, mode in ipairs(supported_modes) do
-            vim.api.nvim_set_keymap(mode, opts.keybinding[mode],
+            vim.api.nvim_set_keymap(mode, opts.keybindings[mode],
                                     "<cmd>lua require('commented').toggle_comment('" ..
                                         mode .. "')<cr>",
                                     {silent = true, noremap = true})
