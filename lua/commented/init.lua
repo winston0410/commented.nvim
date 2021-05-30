@@ -1,5 +1,9 @@
 local helper = require("commented.helper")
-local opts = {comment_padding = " "}
+local opts = {
+    comment_padding = " ",
+    keybinding = {n = "<leader>c", v = "<leader>c"},
+	default_keybinding = true
+}
 
 local function commenting_lines(lines, start_line, end_line, start_symbol,
                                 end_symbol)
@@ -94,11 +98,13 @@ end
 local function setup(user_opts)
     opts = vim.tbl_extend('force', opts, user_opts or {})
     local supported_modes = {'n', 'v'}
-    for _, mode in ipairs(supported_modes) do
-        vim.api.nvim_set_keymap(mode, '<leader>/',
-                                "<cmd>lua require('commented').toggle_comment('" ..
-                                    mode .. "')<cr>",
-                                {silent = true, noremap = true})
+    if opts.default_keybinding then
+        for _, mode in ipairs(supported_modes) do
+            vim.api.nvim_set_keymap(mode, opts.keybinding[mode],
+                                    "<cmd>lua require('commented').toggle_comment('" ..
+                                        mode .. "')<cr>",
+                                    {silent = true, noremap = true})
+        end
     end
 end
 
