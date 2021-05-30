@@ -14,7 +14,7 @@ local function commenting_lines(lines, start_line, end_line, start_symbol,
         return commented_line
     end)
 
-    print('check commented_line', vim.inspect(commented_lines))
+    -- print('check commented_line', vim.inspect(commented_lines))
 
     vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
 end
@@ -23,7 +23,7 @@ local function uncommenting_lines(lines, start_line, end_line, start_symbol,
                                   end_symbol)
     local uncommented_lines = helper.map(lines, function(line)
         local uncommented_line = line:gsub(start_symbol .. opts.comment_padding,
-                                           "")
+                                           "", 1)
         if end_symbol ~= "" then
             uncommented_line = uncommenting_lines:gsub(
                                    end_symbol .. opts.comment_padding, "")
@@ -31,7 +31,7 @@ local function uncommenting_lines(lines, start_line, end_line, start_symbol,
         return uncommented_line
     end)
 
-    print('check uncommented_lines', vim.inspect(uncommented_lines))
+    -- print('check uncommented_lines', vim.inspect(uncommented_lines))
 
     vim.api
         .nvim_buf_set_lines(0, start_line, end_line, false, uncommented_lines)
@@ -71,9 +71,11 @@ local function toggle_comment(mode)
     local pattern = escaped_start_symbol .. ".*" .. escaped_end_symbol
 
     for _, line in ipairs(lines) do
-        if not line:match(pattern) then
-            shouldComment = true
-            break
+        if line ~= "" then
+            if not line:match(pattern) then
+                shouldComment = true
+                break
+            end
         end
     end
 
@@ -85,9 +87,7 @@ local function toggle_comment(mode)
                            escaped_end_symbol)
     end
 
-    if mode == 'v' then
-        vim.cmd "stopinsert"
-    end
+    if mode == 'v' then vim.cmd "stopinsert" end
 
 end
 
