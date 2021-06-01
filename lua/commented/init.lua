@@ -28,7 +28,7 @@ local function uncommenting_lines(lines, start_line, end_line, start_symbol,
                                            "", 1)
         if end_symbol ~= "" then
             uncommented_line = uncommented_line:gsub(
-                                   end_symbol .. opts.comment_padding, "")
+                                   opts.comment_padding .. end_symbol, "")
         end
         return uncommented_line
     end)
