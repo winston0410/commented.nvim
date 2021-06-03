@@ -24,11 +24,9 @@ end
 local function uncommenting_lines(lines, start_line, end_line, start_symbol,
                                   end_symbol)
     local uncommented_lines = helper.map(lines, function(line)
-        local uncommented_line = line:gsub(start_symbol .. opts.comment_padding,
-                                           "", 1)
+        local uncommented_line = line:gsub(start_symbol .. "%s*", "", 1)
         if end_symbol ~= "" then
-            uncommented_line = uncommented_line:gsub(
-                                   opts.comment_padding .. end_symbol, "")
+            uncommented_line = uncommented_line:gsub("%s*" .. end_symbol, "")
         end
         return uncommented_line
     end)
@@ -57,7 +55,7 @@ local function get_lines(mode)
         if start_line > end_line then
             start_line, end_line = end_line, start_line
         end
-		start_line = start_line - 1
+        start_line = start_line - 1
     end
 
     return start_line, end_line
