@@ -3,7 +3,16 @@ local opts = {
     comment_padding = " ",
     keybindings = {n = "<leader>c", v = "<leader>c"},
     set_keybindings = true,
-    alt_cms = {javascriptreact = {patterns = {double = '/*%s*/'}}}
+    alt_cms = {
+		typescriptreact = {block = "/*%s*/"},
+		javascriptreact = {block = "/*%s*/"},
+        javascript = {block = "/*%s*/"},
+		typescript = {block = "/*%s*/"},
+		sql = {block = "/*%s*/"},
+		lua = {block = "--[[%s--]]"},
+		teal = {block = "--[[%s--]]"},
+    },
+	cms_to_use = {}
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol,
@@ -23,12 +32,15 @@ local function commenting_lines(lines, start_line, end_line, start_symbol,
 end
 
 local function uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
-    local uncommented_lines = helper.map(lines, function(line, index)
+    local index = 1
+    local uncommented_lines = helper.map(lines, function(line)
+        if line == "" then return line end
         local start_symbol, end_symbol = unpack(uncomment_symbols[index])
         local uncommented_line = line:gsub(start_symbol .. "%s*", "", 1)
         if end_symbol ~= "" then
             uncommented_line = uncommented_line:gsub("%s*" .. end_symbol, "")
         end
+        index = index + 1
         return uncommented_line
     end)
 
@@ -64,10 +76,10 @@ local function toggle_comment(mode)
         helper.get_comment_wrap(cms)
     local uncomment_symbols = {}
 
-    local alt_cms_opts = opts.alt_cms[filetype] or {}
+    local alt_cms = opts.alt_cms[filetype] or {}
 
     local comment_patterns = vim.tbl_extend('force', {cms = cms},
-                                            alt_cms_opts.patterns or {})
+                                            alt_cms or {})
     for _, line in ipairs(lines) do
         if line ~= "" then
             local matched = has_matching_pattern(line, comment_patterns,
@@ -76,20 +88,18 @@ local function toggle_comment(mode)
                 should_comment = true
                 break
             end
-        else
-            table.insert(uncomment_symbols, {"", ""})
         end
     end
 
     -- print('check should_comment', should_comment, vim.inspect(uncomment_symbols))
 
     if should_comment then
-        local comment_string_to_use = alt_cms_opts.to_comment or "cms"
+        local comment_string_to_use = opts.cms_to_use[filetype] or "cms"
 
         if comment_string_to_use ~= "cms" then
             comment_start_symbol, comment_end_symbol =
                 helper.get_comment_wrap(
-                    alt_cms_opts.patterns[comment_string_to_use])
+                    alt_cms[comment_string_to_use])
         end
 
         commenting_lines(lines, start_line, end_line, comment_start_symbol,
