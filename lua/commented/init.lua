@@ -2,7 +2,8 @@ local helper = require("commented.helper")
 local opts = {
     comment_padding = " ",
     keybindings = {n = "<leader>c", v = "<leader>c"},
-    set_keybindings = true
+    set_keybindings = true,
+    alt_cms = {javascript = {patterns = {'/*%s*/'}}}
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol,
@@ -35,8 +36,7 @@ local function uncommenting_lines(lines, start_line, end_line, start_symbol,
         .nvim_buf_set_lines(0, start_line, end_line, false, uncommented_lines)
 end
 
-local function get_comment_wrap()
-    local cs = vim.api.nvim_buf_get_option(0, 'commentstring')
+local function get_comment_wrap(cs)
     if cs:find('%%s') then
         return cs:match('^(.*)%%s'), cs:match('^.*%%s(.*)')
     else
@@ -65,8 +65,10 @@ local function toggle_comment(mode)
     local start_line, end_line = get_lines(mode)
     local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
     local shouldComment = false
+    local filetype = vim.o.filetype
 
-    local comment_start_symbol, comment_end_symbol = get_comment_wrap()
+    local comment_start_symbol, comment_end_symbol
+
     local escaped_start_symbol, escaped_end_symbol =
         helper.escape_symbols(comment_start_symbol),
         helper.escape_symbols(comment_end_symbol)
@@ -83,6 +85,15 @@ local function toggle_comment(mode)
     end
 
     if shouldComment then
+        local commentstring = opts.alt_cms[filetype].to_comment
+        if commentstring ~= "cms" then
+            comment_start_symbol, comment_end_symbol =
+                get_comment_wrap(opts.alt_cms[filetype][commentstring])
+        else
+            comment_start_symbol, comment_end_symbol =
+                get_comment_wrap(vim.api.nvim_buf_get_option(0, 'commentstring'))
+        end
+
         commenting_lines(lines, start_line, end_line, comment_start_symbol,
                          comment_end_symbol)
     else
