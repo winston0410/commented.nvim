@@ -2,15 +2,35 @@
 
 A commenting plugin written in Lua that actually works.
 
+This plugin uses `commentstring` and custom comment definition for accurately comment and uncomment code.
+
+![normal mode demo](./gif/normal-mode-demo.gif)
+
 ## Features
 
 - commenting lines in normal mode and visual line mode
 
-- commenting words in visual mode (**WIP**)
-
 - support **counts** for commenting in normal mode
 
 - toggleable commenting command
+
+- Handle uncommenting **multiple comment patterns(inline and block comment)** correctly
+
+- Handle comments with various spacing correctly
+
+## Demo
+
+### Commenting in normal mode with count
+
+![normal mode demo](./gif/normal-mode-demo.gif)
+
+### Commenting in virtual line mode
+
+![visual-mode-demo](./gif/visual-mode-demo.gif)
+
+### Uncommenting both inline and block comment
+
+![various comment patterns](./gif/various-comment-format-demo.gif)
 
 ## Why another comment plugin?
 
@@ -38,9 +58,11 @@ This is the default configuration.
 local opts = {
 	comment_padding = " ", -- padding between starting and ending comment symbols
 	keybindings = {n = "<leader>c", v = "<leader>c"}, -- what key to toggle comment
-	set_keybindings = true -- whether or not keybinding is set on setup
+	set_keybindings = true, -- whether or not keybinding is set on setup
 }
 ```
+
+You can define your own mapping with `require('commented').toggle_comment(mode)`
 
 If you are happy with it, just call `setup()` to make it start working.
 
