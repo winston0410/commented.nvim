@@ -53,7 +53,7 @@ local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
     for _, pattern in pairs(comment_patterns) do
         local escaped_start_symbol, escaped_end_symbol =
             helper.escape_symbols(helper.get_comment_wrap(pattern))
-        local escaped_pattern = escaped_start_symbol .. ".*" ..
+        local escaped_pattern = "^%s*" .. escaped_start_symbol .. ".*" ..
                                     escaped_end_symbol
         if line:match(escaped_pattern) then
             table.insert(uncomment_symbols,
@@ -91,7 +91,7 @@ local function toggle_comment(mode)
         end
     end
 
-    -- print('check should_comment', should_comment, vim.inspect(uncomment_symbols))
+    print('check should_comment', should_comment, vim.inspect(uncomment_symbols))
 
     if should_comment then
         local comment_string_to_use = opts.cms_to_use[filetype] or "cms"
