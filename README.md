@@ -18,6 +18,8 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 - Handle comments with various spacing correctly
 
+- Comment ex-mode command that handles range included
+
 ## Demo
 
 ### Commenting in normal mode with count
@@ -59,6 +61,7 @@ local opts = {
 	comment_padding = " ", -- padding between starting and ending comment symbols
 	keybindings = {n = "<leader>c", v = "<leader>c"}, -- what key to toggle comment
 	set_keybindings = true, -- whether or not keybinding is set on setup
+	ex_mode_cmd = "Comment" -- command for commenting in ex-mode, set it null to not set the command initially.
 }
 ```
 
