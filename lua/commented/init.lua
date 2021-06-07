@@ -11,6 +11,9 @@ local opts = {
 		sql = {block = "/*%s*/"},
 		lua = {block = "--[[%s--]]"},
 		teal = {block = "--[[%s--]]"},
+		rust = {block = "/*%s*/"},
+		kotlin = {block = "/*%s*/"},
+		java = {block = "/*%s*/"},
     },
 	cms_to_use = {}
 }
