@@ -1,17 +1,13 @@
-function! Commented_normal() abort
+function! Commented_n() abort
     set opfunc=Toggle_comment_normal
     return 'g@'
 endfunction
 
-function! Commented_visual() abort
-    set opfunc=Toggle_comment_virtual
-    return 'g@'
+function! Commented_nl() abort
+	set opfunc=Toggle_comment_normal
+	return 'g@$'
 endfunction
 
-function! Toggle_comment_normal()
+function! Toggle_comment_normal(type)
 	execute "lua require('commented').toggle_comment('n')"
-endfunction
-
-function! Toggle_comment_virtual()
-	execute "lua require('commented').toggle_comment('v')"
 endfunction

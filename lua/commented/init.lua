@@ -1,7 +1,7 @@
 local helper = require("commented.helper")
 local opts = {
     comment_padding = " ",
-    keybindings = {n = "<leader>c", v = "<leader>c"},
+    keybindings = {n = "<leader>c", v = "<leader>c", nl = "<leader>cc"},
     set_keybindings = true,
     alt_cms = {
         typescriptreact = {block = "/*%s*/"},
@@ -69,8 +69,8 @@ local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
     return matched
 end
 
-local function toggle_comment(mode)
-    local start_line, end_line = helper.get_lines(mode)
+local function toggle_comment(mode, line1, line2)
+    local start_line, end_line = helper.get_lines(mode, line1, line2)
     local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
     local should_comment = false
     local filetype, cms = vim.o.filetype,
@@ -107,9 +107,6 @@ local function toggle_comment(mode)
     else
         uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
     end
-
-    if mode == 'v' then vim.api.nvim_input("<esc>") end
-
 end
 
 local function setup(user_opts)
@@ -118,15 +115,21 @@ local function setup(user_opts)
     if opts.set_keybindings then
         for _, mode in ipairs(supported_modes) do
             vim.api.nvim_set_keymap(mode, opts.keybindings[mode],
-                                    "<cmd>lua require('commented').toggle_comment('" ..
-                                        mode .. "')<cr>",
-                                    {silent = true, noremap = true})
+                                    "Commented_n()", {
+                expr = true,
+                silent = true,
+                noremap = true
+            })
         end
     end
 
+    vim.api.nvim_set_keymap("n", opts.keybindings.nl, "Commented_nl()",
+                            {expr = true, silent = true, noremap = true})
+
     if opts.ex_mode_cmd then
-        vim.api.nvim_exec(
-            "command! -range " .. opts.ex_mode_cmd .. " lua require('commented').toggle_comment('c')", true)
+        vim.api.nvim_exec("command! -range " .. opts.ex_mode_cmd ..
+                              " lua require('commented').toggle_comment('c', <line1>, <line2>)",
+                          true)
     end
 end
 
