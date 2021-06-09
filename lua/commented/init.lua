@@ -1,18 +1,22 @@
 local helper = require("commented.helper")
 local opts = {
     comment_padding = " ",
-    keybindings = {n = "<leader>c", v = "<leader>c"},
+    keybindings = {n = "<leader>c", v = "<leader>c", nl = "<leader>cc"},
     set_keybindings = true,
     alt_cms = {
-		typescriptreact = {block = "/*%s*/"},
-		javascriptreact = {block = "/*%s*/"},
+        typescriptreact = {block = "/*%s*/"},
+        javascriptreact = {block = "/*%s*/"},
         javascript = {block = "/*%s*/"},
-		typescript = {block = "/*%s*/"},
-		sql = {block = "/*%s*/"},
-		lua = {block = "--[[%s--]]"},
-		teal = {block = "--[[%s--]]"},
+        typescript = {block = "/*%s*/"},
+        sql = {block = "/*%s*/"},
+        lua = {block = "--[[%s--]]"},
+        teal = {block = "--[[%s--]]"},
+        rust = {block = "/*%s*/"},
+        kotlin = {block = "/*%s*/"},
+        java = {block = "/*%s*/"}
     },
-	cms_to_use = {}
+    cms_to_use = {},
+    ex_mode_cmd = "Comment"
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol,
@@ -65,8 +69,8 @@ local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
     return matched
 end
 
-local function toggle_comment(mode)
-    local start_line, end_line = helper.get_lines(mode)
+local function toggle_comment(mode, line1, line2)
+    local start_line, end_line = helper.get_lines(mode, line1, line2)
     local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
     local should_comment = false
     local filetype, cms = vim.o.filetype,
@@ -78,8 +82,7 @@ local function toggle_comment(mode)
 
     local alt_cms = opts.alt_cms[filetype] or {}
 
-    local comment_patterns = vim.tbl_extend('force', {cms = cms},
-                                            alt_cms or {})
+    local comment_patterns = vim.tbl_extend('force', {cms = cms}, alt_cms or {})
     for _, line in ipairs(lines) do
         if line ~= "" then
             local matched = has_matching_pattern(line, comment_patterns,
@@ -91,15 +94,12 @@ local function toggle_comment(mode)
         end
     end
 
-    -- print('check should_comment', should_comment, vim.inspect(uncomment_symbols))
-
     if should_comment then
         local comment_string_to_use = opts.cms_to_use[filetype] or "cms"
 
         if comment_string_to_use ~= "cms" then
             comment_start_symbol, comment_end_symbol =
-                helper.get_comment_wrap(
-                    alt_cms[comment_string_to_use])
+                helper.get_comment_wrap(alt_cms[comment_string_to_use])
         end
 
         commenting_lines(lines, start_line, end_line, comment_start_symbol,
@@ -107,9 +107,6 @@ local function toggle_comment(mode)
     else
         uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
     end
-
-    if mode == 'v' then vim.api.nvim_input("<esc>") end
-
 end
 
 local function setup(user_opts)
@@ -118,10 +115,21 @@ local function setup(user_opts)
     if opts.set_keybindings then
         for _, mode in ipairs(supported_modes) do
             vim.api.nvim_set_keymap(mode, opts.keybindings[mode],
-                                    "<cmd>lua require('commented').toggle_comment('" ..
-                                        mode .. "')<cr>",
-                                    {silent = true, noremap = true})
+                                    "Commented_n()", {
+                expr = true,
+                silent = true,
+                noremap = true
+            })
         end
+    end
+
+    vim.api.nvim_set_keymap("n", opts.keybindings.nl, "Commented_nl()",
+                            {expr = true, silent = true, noremap = true})
+
+    if opts.ex_mode_cmd then
+        vim.api.nvim_exec("command! -range " .. opts.ex_mode_cmd ..
+                              " lua require('commented').toggle_comment('c', <line1>, <line2>)",
+                          true)
     end
 end
 

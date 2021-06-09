@@ -32,18 +32,13 @@ local function escape_symbols(...)
     return unpack(temp)
 end
 
-local function get_lines(mode)
+local function get_lines(mode, line1, line2)
     local start_line, end_line
-    local current_line = vim.api.nvim_win_get_cursor(0)[1]
-    if mode == "n" then
-        local count = vim.v.count == 0 and 0 or vim.v.count - 1
-        start_line, end_line = current_line - 1, current_line + count
+    if mode == "n" or mode == "v" then
+        start_line, end_line = vim.api.nvim_buf_get_mark(0, "[")[1] - 1,
+                               vim.api.nvim_buf_get_mark(0, "]")[1]
     else
-        start_line, end_line = vim.fn.line("v"), current_line
-        if start_line > end_line then
-            start_line, end_line = end_line, start_line
-        end
-        start_line = start_line - 1
+        start_line, end_line = tonumber(line1) - 1, tonumber(line2)
     end
 
     return start_line, end_line
@@ -59,7 +54,7 @@ end
 
 local helper = {
     get_lines = get_lines,
-	get_comment_wrap = get_comment_wrap,
+    get_comment_wrap = get_comment_wrap,
     map = map,
     escape_symbols = escape_symbols
 }

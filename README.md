@@ -10,13 +10,15 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 - commenting lines in normal mode and visual line mode
 
-- support **counts** for commenting in normal mode
+- support **counts** for commenting in normal mode (e.g. `2<leader>c2j`, `3<leader>cc`)
 
 - toggleable commenting command
 
 - Handle uncommenting **multiple comment patterns(inline and block comment)** correctly
 
 - Handle comments with various spacing correctly
+
+- Comment ex-mode command that handles range included
 
 ## Demo
 
@@ -57,8 +59,9 @@ This is the default configuration.
 ```lua
 local opts = {
 	comment_padding = " ", -- padding between starting and ending comment symbols
-	keybindings = {n = "<leader>c", v = "<leader>c"}, -- what key to toggle comment
+	keybindings = {n = "<leader>c", v = "<leader>c, nl = "<leader>cc"}, -- what key to toggle comment, nl is for mapping <leader>c$, just like dd for d
 	set_keybindings = true, -- whether or not keybinding is set on setup
+	ex_mode_cmd = "Comment" -- command for commenting in ex-mode, set it null to not set the command initially.
 }
 ```
 
