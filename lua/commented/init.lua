@@ -13,7 +13,8 @@ local opts = {
         teal = {block = "--[[%s--]]"},
         rust = {block = "/*%s*/"},
         kotlin = {block = "/*%s*/"},
-        java = {block = "/*%s*/"}
+        java = {block = "/*%s*/"},
+		nix = {inline = "#%s"}
     },
     cms_to_use = {},
     ex_mode_cmd = "Comment"
