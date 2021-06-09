@@ -14,7 +14,8 @@ local opts = {
         rust = {block = "/*%s*/"},
         kotlin = {block = "/*%s*/"},
         java = {block = "/*%s*/"},
-		nix = {inline = "#%s"}
+		nix = {inline = "#%s"},
+		-- sh = {block = ": '%s'"},
     },
     cms_to_use = {},
     ex_mode_cmd = "Comment"
