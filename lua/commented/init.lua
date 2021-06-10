@@ -16,6 +16,7 @@ local opts = {
 		java = { block = "/*%s*/" },
 		nix = { inline = "#%s" },
 		cpp = { inline = "//%s" },
+		fennel = { inline = ";;%s" },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
