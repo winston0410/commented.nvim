@@ -59,7 +59,7 @@ This is the default configuration.
 ```lua
 local opts = {
 	comment_padding = " ", -- padding between starting and ending comment symbols
-	keybindings = {n = "<leader>c", v = "<leader>c, nl = "<leader>cc"}, -- what key to toggle comment, nl is for mapping <leader>c$, just like dd for d
+	keybindings = {n = "<leader>c", v = "<leader>c", nl = "<leader>cc"}, -- what key to toggle comment, nl is for mapping <leader>c$, just like dd for d
 	set_keybindings = true, -- whether or not keybinding is set on setup
 	ex_mode_cmd = "Comment" -- command for commenting in ex-mode, set it null to not set the command initially.
 }
