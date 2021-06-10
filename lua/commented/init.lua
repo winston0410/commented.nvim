@@ -15,6 +15,7 @@ local opts = {
 		kotlin = { block = "/*%s*/" },
 		java = { block = "/*%s*/" },
 		nix = { inline = "#%s" },
+		cpp = { inline = "//%s" },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
