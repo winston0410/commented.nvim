@@ -17,6 +17,7 @@ local opts = {
 		nix = { inline = "#%s" },
 		cpp = { inline = "//%s" },
 		fennel = { inline = ";;%s" },
+        elixir = { inline = "#%s",  },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
