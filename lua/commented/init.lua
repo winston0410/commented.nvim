@@ -8,7 +8,7 @@ local opts = {
 		javascriptreact = { block = "/*%s*/" },
 		javascript = { block = "/*%s*/" },
 		typescript = { block = "/*%s*/" },
-		sql = { block = "/*%s*/" },
+		sql = { inline = "--%s", block = "/*%s*/" },
 		lua = { block = "--[[%s--]]" },
 		teal = { block = "--[[%s--]]" },
 		rust = { block = "/*%s*/" },
