@@ -20,6 +20,8 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 - Comment ex-mode command that handles range included
 
+- Provide the correct `commentstring` for filetype not handled by neovim initially
+
 ## Demo
 
 ### Commenting in normal mode with count
