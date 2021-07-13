@@ -1,1 +1,1 @@
-set cms={-%s-}
+set cms=--%s
