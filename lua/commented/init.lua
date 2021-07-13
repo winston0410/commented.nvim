@@ -19,6 +19,7 @@ local opts = {
 		cpp = { inline = "//%s" },
 		fennel = { inline = ";;%s" },
         elixir = { inline = "#%s",  },
+        hjson = { inline = "#%s", jsInline = "//%s" },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
