@@ -22,6 +22,7 @@ local opts = {
         hjson = { inline = "#%s", jsInline = "//%s" },
         dhall = { block = "{-%s-}"},
         lean = { block = "/-%s-/"},
+        wren = { block = "/*%s*/"},
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
