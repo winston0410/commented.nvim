@@ -21,6 +21,7 @@ local opts = {
         elixir = { inline = "#%s",  },
         hjson = { inline = "#%s", jsInline = "//%s" },
         dhall = { block = "{-%s-}"},
+        lean = { block = "/-%s-/"},
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
