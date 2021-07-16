@@ -18,17 +18,20 @@ local opts = {
 		nix = { inline = "#%s" },
 		cpp = { inline = "//%s" },
 		fennel = { inline = ";;%s" },
-        elixir = { inline = "#%s",  },
-        hjson = { inline = "#%s", jsInline = "//%s" },
-        dhall = { block = "{-%s-}"},
-        lean = { block = "/-%s-/"},
-        wren = { block = "/*%s*/"},
-        pug = { unbuffered = "//-%s", block = "//-%s//"},
-        haml = { unbuffered = "-#"},
+		elixir = { inline = "#%s" },
+		hjson = { inline = "#%s", jsInline = "//%s" },
+		dhall = { block = "{-%s-}" },
+		lean = { block = "/-%s-/" },
+		wren = { block = "/*%s*/" },
+		pug = { unbuffered = "//-%s", block = "//-%s//" },
+		haml = { unbuffered = "-#" },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
 	ex_mode_cmd = "Comment",
+	replace_patterns = {
+		njk = {},
+	},
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
@@ -84,10 +87,15 @@ local function toggle_comment(mode, line1, line2)
 
 	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
 	local uncomment_symbols = {}
+    -- For template engine
+	local replace_symbols = {}
 
 	local alt_cms = opts.alt_cms[filetype] or {}
 
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
+    -- For template engine
+    local replace_patterns = opts.replace_patterns[filetype]
+    
 	for _, line in ipairs(lines) do
 		if line ~= "" then
 			local matched = has_matching_pattern(line, comment_patterns, uncomment_symbols)
@@ -105,6 +113,11 @@ local function toggle_comment(mode, line1, line2)
 			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(alt_cms[comment_string_to_use])
 		end
 
+		if replace_patterns then
+			-- print("special treatment")
+            -- uncomment_symbols(lines, start_line, end_line, replace_symbols)
+		end
+
 		commenting_lines(lines, start_line, end_line, comment_start_symbol, comment_end_symbol)
 	else
 		uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
@@ -112,7 +125,7 @@ local function toggle_comment(mode, line1, line2)
 end
 
 local function setup(user_opts)
-	opts = vim.tbl_extend("force", opts, user_opts or {})
+	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 	local supported_modes = { "n", "v" }
 	if opts.set_keybindings then
 		for _, mode in ipairs(supported_modes) do
