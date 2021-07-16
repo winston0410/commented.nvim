@@ -25,6 +25,7 @@ local opts = {
 		wren = { block = "/*%s*/" },
 		pug = { unbuffered = "//-%s", block = "//-%s//" },
 		haml = { unbuffered = "-#" },
+		haxe = { block = "/**%s**/" },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
