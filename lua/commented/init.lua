@@ -30,9 +30,9 @@ local opts = {
 	},
 	cms_to_use = {},
 	ex_mode_cmd = "Comment",
-	replace_patterns = {
-		njk = {},
-	},
+	-- replace_patterns = {
+		-- nunjucks = { { "{{", "}}" }, { "{%", "%}" } },
+	-- },
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
@@ -48,22 +48,24 @@ local function commenting_lines(lines, start_line, end_line, start_symbol, end_s
 	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
 end
 
-local function uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
+local function clear_lines_symbols(lines, target_symbols)
 	local index = 1
-	local uncommented_lines = helper.map(lines, function(line)
+	return helper.map(lines, function(line)
 		if line == "" then
 			return line
 		end
-		local start_symbol, end_symbol = unpack(uncomment_symbols[index])
-		local uncommented_line = line:gsub(start_symbol .. "%s*", "", 1)
+		local start_symbol, end_symbol = unpack(target_symbols[index])
+		local cleaned_line = line:gsub(start_symbol .. "%s*", "", 1)
 		if end_symbol ~= "" then
-			uncommented_line = uncommented_line:gsub("%s*" .. end_symbol, "")
+			cleaned_line = cleaned_line:gsub("%s*" .. end_symbol, "")
 		end
 		index = index + 1
-		return uncommented_line
+		return cleaned_line
 	end)
+end
 
-	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, uncommented_lines)
+local function uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
+	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, clear_lines_symbols(lines, uncomment_symbols))
 end
 
 local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
@@ -88,15 +90,15 @@ local function toggle_comment(mode, line1, line2)
 
 	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
 	local uncomment_symbols = {}
-    -- For template engine
-	local replace_symbols = {}
+	-- For template engine
+	-- local replace_symbols = {}
 
 	local alt_cms = opts.alt_cms[filetype] or {}
 
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
-    -- For template engine
-    local replace_patterns = opts.replace_patterns[filetype]
-    
+	-- For template engine
+	-- local replace_patterns = opts.replace_patterns[filetype]
+
 	for _, line in ipairs(lines) do
 		if line ~= "" then
 			local matched = has_matching_pattern(line, comment_patterns, uncomment_symbols)
@@ -112,11 +114,6 @@ local function toggle_comment(mode, line1, line2)
 
 		if comment_string_to_use ~= "cms" then
 			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(alt_cms[comment_string_to_use])
-		end
-
-		if replace_patterns then
-			-- print("special treatment")
-            -- uncomment_symbols(lines, start_line, end_line, replace_symbols)
 		end
 
 		commenting_lines(lines, start_line, end_line, comment_start_symbol, comment_end_symbol)
