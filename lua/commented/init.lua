@@ -23,6 +23,8 @@ local opts = {
         dhall = { block = "{-%s-}"},
         lean = { block = "/-%s-/"},
         wren = { block = "/*%s*/"},
+        pug = { unbuffered = "//-%s", block = "//-%s//"},
+        haml = { unbuffered = "-#"},
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
