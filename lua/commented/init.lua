@@ -19,7 +19,7 @@ local opts = {
 		cpp = { inline = "//%s" },
 		fennel = { inline = ";;%s" },
 		elixir = { inline = "#%s" },
-		hjson = { inline = "#%s", jsInline = "//%s" },
+		hjson = { block = "/*%s*/", jsInline = "//%s" },
 		dhall = { block = "{-%s-}" },
 		lean = { block = "/-%s-/" },
 		wren = { block = "/*%s*/" },
