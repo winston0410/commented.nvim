@@ -1,11 +1,3 @@
-local function map(table, callback)
-    local new_table = {}
-    for index, value in ipairs(table) do
-        new_table[index] = callback(value, index)
-    end
-    return new_table
-end
-
 local target_symbols = "[%^%$%(%)%%%.%[%]%*%+%-%?]"
 
 local replacement_table = {
@@ -55,7 +47,6 @@ end
 local helper = {
     get_lines = get_lines,
     get_comment_wrap = get_comment_wrap,
-    map = map,
     escape_symbols = escape_symbols
 }
 

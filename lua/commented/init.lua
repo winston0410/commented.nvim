@@ -36,21 +36,21 @@ local opts = {
 }
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
-	local commented_lines = helper.map(lines, function(line)
+	local commented_lines = vim.tbl_map(function(line)
 		local commented_line = line:gsub("([^%s])", start_symbol .. opts.comment_padding .. "%1", 1)
 		if end_symbol ~= "" then
 			commented_line = commented_line .. opts.comment_padding .. end_symbol
 		end
 
 		return commented_line
-	end)
+	end, lines)
 
 	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
 end
 
 local function clear_lines_symbols(lines, target_symbols)
 	local index = 1
-	return helper.map(lines, function(line)
+	return vim.tbl_map(function(line)
 		if line == "" then
 			return line
 		end
@@ -61,7 +61,7 @@ local function clear_lines_symbols(lines, target_symbols)
 		end
 		index = index + 1
 		return cleaned_line
-	end)
+	end, lines)
 end
 
 local function uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
