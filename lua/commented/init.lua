@@ -37,12 +37,13 @@ local opts = {
 	-- },
 }
 
-local space_only = "^%s*$"
+local leading_space = "^%s*"
+local space_only = leading_space .. "$"
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
 	local commented_lines = vim.tbl_map(function(line)
         if opts.trim_leading_whitespace then
-            line = line:gsub(space_only, "")
+            line = line:gsub(leading_space, "")
         end
 		local commented_line = line:gsub("([^%s])", start_symbol .. opts.comment_padding .. "%1", 1)
 		if end_symbol ~= "" then
