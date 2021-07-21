@@ -31,6 +31,7 @@ local opts = {
 	},
 	cms_to_use = {},
 	ex_mode_cmd = "Comment",
+    trim_leading_whitespace = false
 	-- replace_patterns = {
 		-- nunjucks = { { "{{", "}}" }, { "{%", "%}" } },
 	-- },
@@ -40,6 +41,9 @@ local space_only = "^%s*$"
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
 	local commented_lines = vim.tbl_map(function(line)
+        if opts.trim_leading_whitespace then
+            line = line:gsub(space_only, "")
+        end
 		local commented_line = line:gsub("([^%s])", start_symbol .. opts.comment_padding .. "%1", 1)
 		if end_symbol ~= "" then
 			commented_line = commented_line .. opts.comment_padding .. end_symbol
