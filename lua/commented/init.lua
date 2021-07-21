@@ -36,6 +36,8 @@ local opts = {
 	-- },
 }
 
+local space_only = "^%s*$"
+
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
 	local commented_lines = vim.tbl_map(function(line)
 		local commented_line = line:gsub("([^%s])", start_symbol .. opts.comment_padding .. "%1", 1)
@@ -52,7 +54,7 @@ end
 local function clear_lines_symbols(lines, target_symbols)
 	local index = 1
 	return vim.tbl_map(function(line)
-		if line == "" then
+		if line:match(space_only) then
 			return line
 		end
 		local start_symbol, end_symbol = unpack(target_symbols[index])
@@ -101,7 +103,7 @@ local function toggle_comment(mode, line1, line2)
 	-- local replace_patterns = opts.replace_patterns[filetype]
 
 	for _, line in ipairs(lines) do
-		if line ~= "" then
+		if not line:match(space_only) then
 			local matched = has_matching_pattern(line, comment_patterns, uncomment_symbols)
 			if not matched then
 				should_comment = true
