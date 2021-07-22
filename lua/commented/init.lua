@@ -31,9 +31,9 @@ local opts = {
 	},
 	cms_to_use = {},
 	ex_mode_cmd = "Comment",
-    left_align_comment = true
+	left_align_comment = true,
 	-- replace_patterns = {
-		-- nunjucks = { { "{{", "}}" }, { "{%", "%}" } },
+	-- nunjucks = { { "{{", "}}" }, { "{%", "%}" } },
 	-- },
 }
 
@@ -42,7 +42,7 @@ local space_only = leading_space .. "$"
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
 	local commented_lines = vim.tbl_map(function(line)
-        local pattern = opts.left_align_comment and leading_space or "([^%s])"
+		local pattern = opts.left_align_comment and leading_space or "([^%s])"
 		local commented_line = line:gsub(pattern, start_symbol .. opts.comment_padding .. "%1", 1)
 		if end_symbol ~= "" then
 			commented_line = commented_line .. opts.comment_padding .. end_symbol
@@ -61,7 +61,7 @@ local function clear_lines_symbols(lines, target_symbols)
 			return line
 		end
 		local start_symbol, end_symbol = unpack(target_symbols[index])
-        local pattern = opts.left_align_comment and opts.comment_padding or "%s*"
+		local pattern = opts.left_align_comment and opts.comment_padding or "%s*"
 		local cleaned_line = line:gsub(start_symbol .. pattern, "", 1)
 		if end_symbol ~= "" then
 			cleaned_line = cleaned_line:gsub("%s*" .. end_symbol, "")
@@ -140,9 +140,13 @@ local function setup(user_opts)
 				noremap = true,
 			})
 		end
+		vim.api.nvim_set_keymap(
+			"n",
+			opts.keybindings.nl,
+			"Commented_nl()",
+			{ expr = true, silent = true, noremap = true }
+		)
 	end
-
-	vim.api.nvim_set_keymap("n", opts.keybindings.nl, "Commented_nl()", { expr = true, silent = true, noremap = true })
 
 	if opts.ex_mode_cmd then
 		vim.api.nvim_exec(
