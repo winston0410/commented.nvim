@@ -27,6 +27,7 @@ local opts = {
 		haml = { unbuffered = "-#" },
 		haxe = { block = "/**%s**/" },
 		rjson = { block = "/*%s*/" },
+		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
