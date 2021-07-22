@@ -32,7 +32,7 @@ local opts = {
 	},
 	cms_to_use = {},
 	ex_mode_cmd = "Comment",
-	left_align_comment = true,
+	left_align_comment = false,
 	-- replace_patterns = {
 	-- nunjucks = { { "{{", "}}" }, { "{%", "%}" } },
 	-- },
