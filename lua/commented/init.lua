@@ -112,9 +112,9 @@ local function toggle_comment(mode, line1, line2)
 	end
 
 	if should_comment then
-		local comment_string_to_use = opts.cms_to_use[filetype] or "cms"
+		local comment_string_to_use = opts.cms_to_use[filetype]
 
-		if comment_string_to_use ~= "cms" then
+		if comment_string_to_use then
 			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(alt_cms[comment_string_to_use])
 		end
 
