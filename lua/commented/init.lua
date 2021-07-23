@@ -5,6 +5,7 @@ local opts = {
 	set_keybindings = true,
 	inline_cms = {
 		hjson = { inline = "//%s" },
+		mysql = { inline = "#%s" },
 	},
 	block_cms = {
 		typescriptreact = { block = "/*%s*/" },
@@ -12,6 +13,7 @@ local opts = {
 		javascript = { block = "/*%s*/" },
 		typescript = { block = "/*%s*/" },
 		sql = { block = "/*%s*/" },
+		mysql = { block = "/*%s*/" },
 		lua = { block = "--[[%s--]]" },
 		teal = { block = "--[[%s--]]" },
 		rust = { block = "/*%s*/" },
@@ -19,7 +21,7 @@ local opts = {
 		java = { block = "/*%s*/" },
 		groovy = { block = "/*%s*/" },
 		go = { block = "/*%s*/" },
-		c = { throw_away_block = "#if 0%s#endif" },
+		c = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		cpp = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		hjson = { block = "/*%s*/" },
 		dhall = { block = "{-%s-}" },
