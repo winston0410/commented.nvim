@@ -30,14 +30,10 @@ local opts = {
 		haxe = { block = "/**%s**/" },
 		rjson = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
-		-- sh = {block = ": '%s'"},
 	},
 	cms_to_use = {},
 	ex_mode_cmd = "Comment",
 	left_align_comment = false,
-	-- replace_patterns = {
-	-- nunjucks = { { "{{", "}}" }, { "{%", "%}" } },
-	-- },
 }
 
 local leading_space = "^%s*"
@@ -100,14 +96,10 @@ local function toggle_comment(mode, line1, line2)
 
 	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
 	local uncomment_symbols = {}
-	-- For template engine
-	-- local replace_symbols = {}
 
 	local alt_cms = opts.alt_cms[filetype] or {}
 
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
-	-- For template engine
-	-- local replace_patterns = opts.replace_patterns[filetype]
 
 	for _, line in ipairs(lines) do
 		if not line:match(space_only) then
