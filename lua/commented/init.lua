@@ -14,6 +14,7 @@ local opts = {
 		rust = { block = "/*%s*/" },
 		kotlin = { block = "/*%s*/" },
 		java = { block = "/*%s*/" },
+		groovy = { block = "/*%s*/" },
 		go = { block = "/*%s*/" },
 		nix = { inline = "#%s" },
 		cpp = { inline = "//%s" },
