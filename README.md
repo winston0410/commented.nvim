@@ -8,11 +8,15 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 ## Features
 
-- commenting lines in normal mode and visual line mode
+- Provide sensible comment symbols default for **as much language as possible** (Always a WIP)
 
-- support **counts** for commenting in normal mode (e.g. `2<leader>c2j`, `3<leader>cc`)
+- Handle multi-line block comment (WIP)
 
-- toggleable commenting command
+- Commenting lines in normal mode and visual line mode
+
+- Support **counts** for commenting in normal mode (e.g. `2<leader>c2j`, `3<leader>cc`)
+
+- Toggleable commenting command
 
 - Handle uncommenting **multiple comment patterns(inline and block comment)** correctly
 
