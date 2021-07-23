@@ -3,12 +3,15 @@ local opts = {
 	comment_padding = " ",
 	keybindings = { n = "<leader>c", v = "<leader>c", nl = "<leader>cc" },
 	set_keybindings = true,
-	alt_cms = {
+	inline_cms = {
+		hjson = { inline = "//%s" },
+	},
+	block_cms = {
 		typescriptreact = { block = "/*%s*/" },
 		javascriptreact = { block = "/*%s*/" },
 		javascript = { block = "/*%s*/" },
 		typescript = { block = "/*%s*/" },
-		sql = { inline = "--%s", block = "/*%s*/" },
+		sql = { block = "/*%s*/" },
 		lua = { block = "--[[%s--]]" },
 		teal = { block = "--[[%s--]]" },
 		rust = { block = "/*%s*/" },
@@ -16,12 +19,9 @@ local opts = {
 		java = { block = "/*%s*/" },
 		groovy = { block = "/*%s*/" },
 		go = { block = "/*%s*/" },
-		nix = { inline = "#%s" },
 		c = { throw_away_block = "#if 0%s#endif" },
-		cpp = { inline = "//%s", throw_away_block = "#if 0%s#endif" },
-		fennel = { inline = ";;%s" },
-		elixir = { inline = "#%s" },
-		hjson = { block = "/*%s*/", jsInline = "//%s" },
+		cpp = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
+		hjson = { block = "/*%s*/" },
 		dhall = { block = "{-%s-}" },
 		lean = { block = "/-%s-/" },
 		wren = { block = "/*%s*/" },
@@ -92,9 +92,10 @@ local function toggle_inline_comment(lines, start_line, end_line)
 	local should_comment = false
 	local uncomment_symbols = {}
 	local filetype, cms = vim.o.filetype, vim.api.nvim_buf_get_option(0, "commentstring")
-	local alt_cms = opts.alt_cms[filetype] or {}
-	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
+	local alt_cms = opts.inline_cms[filetype] or {}
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
+
+	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
 
 	for _, line in ipairs(lines) do
 		if not line:match(space_only) then
@@ -122,14 +123,19 @@ local function toggle_inline_comment(lines, start_line, end_line)
 end
 
 local function toggle_block_comment(lines, start_line, end_line)
-	print("check data", lines, start_line, end_line)
+	print("check data", vim.inspect(lines), start_line, end_line)
 end
 
 local function toggle_comment(mode, line1, line2)
 	local start_line, end_line = helper.get_lines(mode, line1, line2)
 	local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
 	local is_block = false
-	-- Check if target comment should be handled as block
+
+	if #lines > 1 then
+
+		-- Check if target comment should be handled as block
+	end
+
 	if is_block then
 		toggle_block_comment(lines, start_line, end_line)
 	else
@@ -139,6 +145,7 @@ end
 
 local function setup(user_opts)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
+	opts.inline_cms = vim.tbl_deep_extend("force", opts.inline_cms, opts.block_cms)
 	local supported_modes = { "n", "v" }
 	if opts.set_keybindings then
 		for _, mode in ipairs(supported_modes) do
