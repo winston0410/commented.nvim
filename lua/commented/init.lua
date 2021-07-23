@@ -88,19 +88,14 @@ local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
 	return matched
 end
 
-local function toggle_comment(mode, line1, line2)
-	local start_line, end_line = helper.get_lines(mode, line1, line2)
-	local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
-	local should_comment = false
-	local filetype, cms = vim.o.filetype, vim.api.nvim_buf_get_option(0, "commentstring")
-
-	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
+local function toggle_inline_comment(lines, start_line, end_line)
+    local should_comment = false
 	local uncomment_symbols = {}
-
+	local filetype, cms = vim.o.filetype, vim.api.nvim_buf_get_option(0, "commentstring")
 	local alt_cms = opts.alt_cms[filetype] or {}
-
+	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
-
+    
 	for _, line in ipairs(lines) do
 		if not line:match(space_only) then
 			local matched = has_matching_pattern(line, comment_patterns, uncomment_symbols)
@@ -112,15 +107,31 @@ local function toggle_comment(mode, line1, line2)
 	end
 
 	if should_comment then
-		local comment_string_to_use = opts.cms_to_use[filetype]
+		-- Decide what comment symbols to use for comment
+		-- local comment_string_to_use = opts.cms_to_use[filetype]
 
-		if comment_string_to_use then
-			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(alt_cms[comment_string_to_use])
-		end
-
+		-- if comment_string_to_use then
+			-- comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(
+				-- alt_cms[comment_string_to_use] or comment_string_to_use
+			-- )
+		-- end
 		commenting_lines(lines, start_line, end_line, comment_start_symbol, comment_end_symbol)
 	else
 		uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
+	end
+end
+
+local function toggle_block_comment(lines, comment_patterns) end
+
+local function toggle_comment(mode, line1, line2)
+	local start_line, end_line = helper.get_lines(mode, line1, line2)
+	local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
+    local is_block = false
+    -- Check if target comment should be handled as block
+	if is_block then
+		toggle_block_comment(lines, start_line, end_line)
+	else
+		toggle_inline_comment(lines, start_line, end_line)
 	end
 end
 
