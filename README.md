@@ -58,6 +58,14 @@ paq{'winston0410/commented.nvim'}
 Plug 'winston0410/commented.nvim'
 ```
 
+### `packer.nvim`
+
+Do not set this plugin as optional, as sensible default has been made with `ftplugin`
+
+```lua
+use{'winston0410/commented.nvim'}
+```
+
 ## Configuration
 
 This is the default configuration.
