@@ -3,6 +3,7 @@ local opts = {
 	comment_padding = " ",
 	keybindings = { n = "<leader>c", v = "<leader>c", nl = "<leader>cc" },
 	set_keybindings = true,
+	prefer_block_comment = false, -- Set it to true to automatically use block comment when multiple lines are selected
 	inline_cms = {
 		hjson = { inline = "//%s" },
 		mysql = { inline = "#%s" },
@@ -25,6 +26,7 @@ local opts = {
 		c = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		cpp = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		cs = { block = "/*%s*/" },
+		fs = { block = "(*%s*)" },
 		julia = { block = "#=%s=#" },
 		hjson = { block = "/*%s*/" },
 		dhall = { block = "{-%s-}" },
@@ -36,7 +38,6 @@ local opts = {
 		rjson = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 	},
-	cms_to_use = {},
 	ex_mode_cmd = "Comment",
 	left_align_comment = false,
 }
@@ -46,7 +47,10 @@ local space_only = leading_space .. "$"
 
 local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
 	local commented_lines = vim.tbl_map(function(line)
-		local pattern = opts.left_align_comment and leading_space or "([^%s])"
+		-- local pattern = opts.left_align_comment and leading_space or "([^%s])"
+		-- ([^%s*])
+		-- Make this a global option?
+		local pattern = "([^%s])"
 		local commented_line = line:gsub(pattern, start_symbol .. opts.comment_padding .. "%1", 1)
 		if end_symbol ~= "" then
 			commented_line = commented_line .. opts.comment_padding .. end_symbol
@@ -113,23 +117,21 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 	end
 
 	if should_comment then
-		-- Decide what comment symbols to use for comment
-		-- local comment_string_to_use = opts.cms_to_use[filetype]
-
-		-- if comment_string_to_use then
-		-- comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(
-		-- alt_cms[comment_string_to_use] or comment_string_to_use
-		-- )
-		-- end
 		commenting_lines(lines, start_line, end_line, comment_start_symbol, comment_end_symbol)
 	else
 		uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
 	end
 end
 
-local function toggle_block_comment(lines, start_line, end_line, block_symbols)
-	lines[1], lines[#lines] = unpack(clear_lines_symbols({ lines[1], lines[#lines] }, block_symbols))
-	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
+local function toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment)
+	if should_comment then
+		lines[1] = lines[1]:gsub("([^%s]*)", block_symbols[1][1] .. opts.comment_padding .. "%1", 1)
+		lines[#lines] = lines[#lines]:gsub("%s*$", "%1" .. opts.comment_padding .. block_symbols[2][2], 1)
+		vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
+	else
+		lines[1], lines[#lines] = unpack(clear_lines_symbols({ lines[1], lines[#lines] }, block_symbols))
+		vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
+	end
 end
 
 local function has_symbol(prefix, suffix)
@@ -144,33 +146,45 @@ local has_end_symbol = has_symbol("", "%s*$")
 local function toggle_comment(mode, line1, line2)
 	local start_line, end_line = helper.get_lines(mode, line1, line2)
 	local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
-	local is_block = false
+	local is_block, should_comment = false, true
 	local block_symbols = nil
+	local filetype = vim.o.filetype
 
-	if #lines > 1 then
-		local comment_patterns = opts.block_cms[vim.o.filetype]
-		if not comment_patterns then
-			return
-		end
+	if opts.block_cms[filetype] then
+		if #lines > 1 then
+			local comment_patterns = opts.block_cms[filetype]
+			if not comment_patterns then
+				return
+			end
 
-		local first_line, last_line = lines[1], lines[#lines]
-		for _, pattern in pairs(comment_patterns) do
-			local start_symbol, end_symbol = helper.escape_symbols(helper.get_comment_wrap(pattern))
-			if
-				has_start_symbol(first_line, start_symbol)
-				and not has_end_symbol(first_line, end_symbol)
-				and not has_start_symbol(last_line, start_symbol)
-				and has_end_symbol(last_line, end_symbol)
-			then
+			local first_line, last_line = lines[1], lines[#lines]
+			for _, pattern in pairs(comment_patterns) do
+				local start_symbol, end_symbol = helper.escape_symbols(helper.get_comment_wrap(pattern))
+				if
+					has_start_symbol(first_line, start_symbol)
+					and not has_end_symbol(first_line, end_symbol)
+					and not has_start_symbol(last_line, start_symbol)
+					and has_end_symbol(last_line, end_symbol)
+				then
+					block_symbols = { { start_symbol, "" }, { "", end_symbol } }
+					is_block, should_comment = true, false
+					break
+				end
+			end
+
+			if opts.prefer_block_comment then
+				-- Decide what block symbol to use
+				local start_symbol, end_symbol = helper.escape_symbols(
+					helper.get_comment_wrap(opts.block_cms[filetype].block)
+				)
 				block_symbols = { { start_symbol, "" }, { "", end_symbol } }
 				is_block = true
-				break
 			end
 		end
 	end
 
 	if is_block then
-		toggle_block_comment(lines, start_line, end_line, block_symbols)
+		toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment)
 	else
 		toggle_inline_comment(lines, start_line, end_line)
 	end
