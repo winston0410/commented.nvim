@@ -1,6 +1,6 @@
 local helper = require("commented.helper")
 local opts = {
-	comment_padding = " ",
+	comment_padding = "",
 	keybindings = { n = "<leader>c", v = "<leader>c", nl = "<leader>cc" },
 	set_keybindings = true,
 	prefer_block_comment = false, -- Set it to true to automatically use block comment when multiple lines are selected
@@ -38,6 +38,8 @@ local opts = {
 		rjson = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 	},
+	-- commentstring used for commenting
+	custom_cms = {},
 	ex_mode_cmd = "Comment",
 	left_align_comment = false,
 }
@@ -104,8 +106,6 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 	local alt_cms = opts.inline_cms[filetype] or {}
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
 
-	local comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
-
 	for _, line in ipairs(lines) do
 		if not line:match(space_only) then
 			local matched = has_matching_pattern(line, comment_patterns, uncomment_symbols)
@@ -117,6 +117,14 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 	end
 
 	if should_comment then
+		local comment_start_symbol, comment_end_symbol
+		if (opts.custom_cms[filetype] or {}).inline then
+			comment_start_symbol, comment_end_symbol = helper.escape_symbols(
+				helper.get_comment_wrap(opts.custom_cms[filetype].inline)
+			)
+		else
+			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
+		end
 		commenting_lines(lines, start_line, end_line, comment_start_symbol, comment_end_symbol)
 	else
 		uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
@@ -174,9 +182,16 @@ local function toggle_comment(mode, line1, line2)
 
 			if opts.prefer_block_comment then
 				-- Decide what block symbol to use
-				local start_symbol, end_symbol = helper.escape_symbols(
-					helper.get_comment_wrap(opts.block_cms[filetype].block)
-				)
+				local start_symbol, end_symbol
+				if (opts.custom_cms[filetype] or {}).block then
+					start_symbol, end_symbol = helper.escape_symbols(
+						helper.get_comment_wrap(opts.custom_cms[filetype].block)
+					)
+				else
+					start_symbol, end_symbol = helper.escape_symbols(
+						helper.get_comment_wrap(opts.block_cms[filetype].block)
+					)
+				end
 				block_symbols = { { start_symbol, "" }, { "", end_symbol } }
 				is_block = true
 			end
