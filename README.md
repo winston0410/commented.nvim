@@ -10,7 +10,7 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 - Provide sensible comment symbols default for **as much language as possible** (Always a WIP)
 
-- Handle multi-line block comment (WIP)
+- Handle multi-line block comment, both commenting and uncommenting
 
 - Commenting lines in normal mode and visual line mode
 
@@ -66,6 +66,7 @@ This is the default configuration.
 local opts = {
 	comment_padding = " ", -- padding between starting and ending comment symbols
 	keybindings = {n = "<leader>c", v = "<leader>c", nl = "<leader>cc"}, -- what key to toggle comment, nl is for mapping <leader>c$, just like dd for d
+	prefer_block_comment = false, -- Set it to true to automatically use block comment when multiple lines are selected
 	set_keybindings = true, -- whether or not keybinding is set on setup
 	ex_mode_cmd = "Comment" -- command for commenting in ex-mode, set it null to not set the command initially.
 }
@@ -78,6 +79,10 @@ If you are happy with it, just call `setup()` to make it start working.
 ```lua
 require('commented').setup()
 ```
+
+## Doesn't work for the language I use
+
+If this plugin doesn't work for the language you use, you can [contribute and add those symbols here](https://github.com/winston0410/commented.nvim/blob/94246498eb89948271bbeedf0e64d78b28510720/lua/commented/init.lua#L7-L40) for that language. The key for the pattern doesn't matter.
 
 ## Inspiration
 
