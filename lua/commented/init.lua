@@ -135,7 +135,7 @@ end
 
 local function toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment)
 	if should_comment then
-		lines[1] = lines[1]:gsub("([^%s]*)", block_symbols[1][1] .. opts.comment_padding .. "%1", 1)
+		lines[1] = lines[1]:gsub("([^%s])", block_symbols[1][1] .. opts.comment_padding .. "%1", 1)
 		lines[#lines] = lines[#lines]:gsub("%s*$", "%1" .. opts.comment_padding .. block_symbols[2][2], 1)
 		vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
 	else
