@@ -26,6 +26,7 @@ local opts = {
 		c = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		cpp = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		vala = { block = "/*%s*/"},
+		genie = { block = "/*%s*/"},
 		cs = { block = "/*%s*/" },
 		fs = { block = "(*%s*)" },
 		julia = { block = "#=%s=#" },
