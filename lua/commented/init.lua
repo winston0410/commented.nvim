@@ -133,13 +133,39 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 	end
 end
 
-local function toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment)
+local function toggle_block_comment(lines,
+									start_line,
+									end_line,
+									block_symbols,
+									should_comment,
+									insert_newlines)
 	if should_comment then
 		lines[1] = lines[1]:gsub("([^%s])", block_symbols[1][1] .. opts.comment_padding .. "%1", 1)
+
+		if insert_newlines then
+			local str = lines[1]
+			i, j = string.find(str, block_symbols[1][1] .. opts.comment_padding)
+			lines[1] = string.sub(str, i, j - #opts.comment_padding)
+			table.insert(lines, 2, string.sub(str, 0, i - 1) .. string.sub(str, j + #opts.comment_padding, #str))
+		end
+
 		lines[#lines] = lines[#lines]:gsub("%s*$", "%1" .. opts.comment_padding .. block_symbols[2][2], 1)
+
+		if insert_newlines then
+			local str = lines[#lines]
+			i, j = string.find(str, block_symbols[2][2])
+			lines[#lines] = string.sub(str, 0, i - #opts.comment_padding - 1)
+			table.insert(lines, #lines + 1, string.sub(str, i, j))
+		end
+
 		vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
 	else
 		lines[1], lines[#lines] = unpack(clear_lines_symbols({ lines[1], lines[#lines] }, block_symbols))
+		-- If we have empty lines, we inserted newlines so delete them
+		if #lines[1] == 0 and #lines[#lines] == 0 then
+			table.remove(lines, 1)
+			table.remove(lines, #lines)
+		end
 		vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
 	end
 end
@@ -156,7 +182,7 @@ local has_end_symbol = has_symbol("", "%s*$")
 local function toggle_comment(mode, line1, line2)
 	local start_line, end_line = helper.get_lines(mode, line1, line2)
 	local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
-	local is_block, should_comment = false, true
+	local is_block, should_comment, insert_newlines = false, true, false
 	local block_symbols = nil
 	local filetype = vim.o.filetype
 
@@ -190,6 +216,9 @@ local function toggle_comment(mode, line1, line2)
 					start_symbol, end_symbol = helper.escape_symbols(
 						helper.get_comment_wrap(opts.lang_options[filetype].cms.block)
 					)
+					if opts.lang_options[filetype].insert_newlines then
+						insert_newlines = true
+					end
 				else
 					start_symbol, end_symbol = helper.escape_symbols(
 						helper.get_comment_wrap(opts.block_cms[filetype].block)
@@ -202,7 +231,12 @@ local function toggle_comment(mode, line1, line2)
 	end
 
 	if is_block then
-		toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment)
+		toggle_block_comment(lines,
+							 start_line,
+							 end_line,
+							 block_symbols,
+							 should_comment,
+							 insert_newlines)
 	else
 		toggle_inline_comment(lines, start_line, end_line)
 	end
