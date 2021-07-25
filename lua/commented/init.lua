@@ -1,6 +1,6 @@
 local helper = require("commented.helper")
 local opts = {
-	comment_padding = "",
+	comment_padding = " ",
 	keybindings = { n = "<leader>c", v = "<leader>c", nl = "<leader>cc" },
 	set_keybindings = true,
 	prefer_block_comment = false, -- Set it to true to automatically use block comment when multiple lines are selected
