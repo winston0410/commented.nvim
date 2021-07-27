@@ -41,7 +41,7 @@ local opts = {
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 	},
 	-- commentstring used for commenting
-	custom_cms = {},
+	lang_options = {},
 	ex_mode_cmd = "Comment",
 	left_align_comment = false,
 }
@@ -120,9 +120,9 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 
 	if should_comment then
 		local comment_start_symbol, comment_end_symbol
-		if (opts.custom_cms[filetype] or {}).inline then
+		if (opts.lang_options[filetype] or {}).inline then
 			comment_start_symbol, comment_end_symbol = helper.escape_symbols(
-				helper.get_comment_wrap(opts.custom_cms[filetype].inline)
+				helper.get_comment_wrap(opts.lang_options[filetype].inline)
 			)
 		else
 			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
@@ -185,9 +185,9 @@ local function toggle_comment(mode, line1, line2)
 			if opts.prefer_block_comment then
 				-- Decide what block symbol to use
 				local start_symbol, end_symbol
-				if (opts.custom_cms[filetype] or {}).block then
+				if (opts.lang_options[filetype].cms or {}).block then
 					start_symbol, end_symbol = helper.escape_symbols(
-						helper.get_comment_wrap(opts.custom_cms[filetype].block)
+						helper.get_comment_wrap(opts.lang_options[filetype].cms.block)
 					)
 				else
 					start_symbol, end_symbol = helper.escape_symbols(
