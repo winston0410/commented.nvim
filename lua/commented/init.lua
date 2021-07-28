@@ -106,6 +106,12 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 	local should_comment = false
 	local uncomment_symbols, filetype = {}, vim.o.filetype
 	local cms = vim.api.nvim_buf_get_option(0, "commentstring")
+	-- exit early if no cms defined
+	if cms == "" then
+		print("check cms value", cms, type(cms), cms == "")
+		vim.api.nvim_err_writeln("Commented.nvim: No commentstring defined for this filetype.")
+		return
+	end
 	local alt_cms = opts.inline_cms[filetype] or {}
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
 
@@ -182,9 +188,9 @@ local function toggle_comment(mode, line1, line2)
 	local block_symbols = nil
 	local filetype = vim.o.filetype
 
-    if type(opts.hooks.before_comment) == "function" then
-        opts.hooks.before_comment()
-    end
+	if type(opts.hooks.before_comment) == "function" then
+		opts.hooks.before_comment()
+	end
 
 	if opts.block_cms[filetype] then
 		if #lines > 1 then
