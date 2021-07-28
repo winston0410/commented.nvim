@@ -214,7 +214,11 @@ local function toggle_comment(mode, line1, line2)
 				end
 			end
 
-			if opts.prefer_block_comment or (opts.lang_options[filetype] or {}).prefer_block_comment then
+			if
+				opts.prefer_block_comment
+				or opts.lang_options[filetype] and (opts.lang_options[filetype] or {}).prefer_block_comment
+			then
+
 				-- Decide what block symbol to use
 				local start_symbol, end_symbol
 				if opts.lang_options[filetype] and (opts.lang_options[filetype].cms or {}).block then
