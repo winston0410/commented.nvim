@@ -26,6 +26,8 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 - Provide the correct `commentstring` for filetype not handled by neovim initially
 
+- Integrate with any plugin that dynamically switch `cms` based on embedded languages
+
 ## Demo
 
 ### Commenting in normal mode with count
@@ -91,6 +93,32 @@ require('commented').setup()
 ## Doesn't work for the language I use
 
 If this plugin doesn't work for the language you use, you can [contribute and add those symbols here](https://github.com/winston0410/commented.nvim/blob/94246498eb89948271bbeedf0e64d78b28510720/lua/commented/init.lua#L7-L40) for that language. The key for the pattern doesn't matter.
+
+## Integration
+
+This plugin integrates with those that change `commentstring` dynamically in two ways. Using `nvim-ts-context-commentstring` as an example:
+
+You could use an autocommand to dynamically set the `commentstring`:
+
+```lua
+require'nvim-treesitter.configs'.setup {
+  context_commentstring = {
+    enable = true,
+    -- This plugin provided an autocommand option
+    enable_autocmd = true,
+  }
+}
+```
+
+But this will depends on `updatetime`, which may be slow. Another approach is to use hook, which is faster and doesn't depend on `updatetime`:
+
+```lua
+require("commented").setup({
+    hooks = {
+        before_comment = require("ts_context_commentstring.internal").update_commentstring,
+    },
+})
+```
 
 ## Inspiration
 
