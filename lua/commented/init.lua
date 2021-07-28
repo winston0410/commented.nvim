@@ -25,8 +25,8 @@ local opts = {
 		php = { block = "/*%s*/" },
 		c = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
 		cpp = { block = "/*%s*/", throw_away_block = "#if 0%s#endif" },
-		vala = { block = "/*%s*/"},
-		genie = { block = "/*%s*/"},
+		vala = { block = "/*%s*/" },
+		genie = { block = "/*%s*/" },
 		cs = { block = "/*%s*/" },
 		fs = { block = "(*%s*)" },
 		julia = { block = "#=%s=#" },
@@ -44,6 +44,7 @@ local opts = {
 	lang_options = {},
 	ex_mode_cmd = "Comment",
 	left_align_comment = false,
+	hooks = {},
 }
 
 local leading_space = "^%s*"
@@ -133,12 +134,7 @@ local function toggle_inline_comment(lines, start_line, end_line, filetype)
 	end
 end
 
-local function toggle_block_comment(lines,
-									start_line,
-									end_line,
-									block_symbols,
-									should_comment,
-									insert_newlines)
+local function toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment, insert_newlines)
 	if should_comment then
 		lines[1] = lines[1]:gsub("([^%s])", block_symbols[1][1] .. opts.comment_padding .. "%1", 1)
 
@@ -186,6 +182,10 @@ local function toggle_comment(mode, line1, line2)
 	local block_symbols = nil
 	local filetype = vim.o.filetype
 
+    if type(opts.hooks.before_comment) == "function" then
+        opts.hooks.before_comment()
+    end
+
 	if opts.block_cms[filetype] then
 		if #lines > 1 then
 			local comment_patterns = opts.block_cms[filetype]
@@ -208,8 +208,7 @@ local function toggle_comment(mode, line1, line2)
 				end
 			end
 
-			if (opts.prefer_block_comment or
-				opts.lang_options[filetype] or {}).prefer_block_comment then
+			if (opts.prefer_block_comment or opts.lang_options[filetype] or {}).prefer_block_comment then
 				-- Decide what block symbol to use
 				local start_symbol, end_symbol
 				if (opts.lang_options[filetype].cms or {}).block then
@@ -231,12 +230,7 @@ local function toggle_comment(mode, line1, line2)
 	end
 
 	if is_block then
-		toggle_block_comment(lines,
-							 start_line,
-							 end_line,
-							 block_symbols,
-							 should_comment,
-							 insert_newlines)
+		toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment, insert_newlines)
 	else
 		toggle_inline_comment(lines, start_line, end_line)
 	end
