@@ -13,6 +13,7 @@ local opts = {
 		javascriptreact = { block = "/*%s*/" },
 		javascript = { block = "/*%s*/" },
 		typescript = { block = "/*%s*/" },
+		jsonc = { block = "/*%s*/" },
 		sql = { block = "/*%s*/" },
 		mysql = { block = "/*%s*/" },
 		lua = { block = "--[[%s--]]" },
