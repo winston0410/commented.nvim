@@ -7,6 +7,7 @@ local opts = {
 	inline_cms = {
 		hjson = { inline = "//%s" },
 		mysql = { inline = "#%s" },
+		jproperties = { inline = "!%s" },
 	},
 	block_cms = {
 		typescriptreact = { block = "/*%s*/" },
