@@ -8,6 +8,7 @@ local opts = {
 		hjson = { inline = "//%s" },
 		mysql = { inline = "#%s" },
 		jproperties = { inline = "!%s" },
+		terraform = { inline = "//%s" },
 	},
 	block_cms = {
 		typescriptreact = { block = "/*%s*/" },
@@ -40,6 +41,7 @@ local opts = {
 		haml = { unbuffered = "-#" },
 		haxe = { block = "/**%s**/" },
 		rjson = { block = "/*%s*/" },
+		terraform = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 	},
 	-- commentstring used for commenting
