@@ -9,6 +9,7 @@ local opts = {
 		mysql = { inline = "#%s" },
 		jproperties = { inline = "!%s" },
 		terraform = { inline = "//%s" },
+		service = { inline = ";%s" },
 	},
 	block_cms = {
 		typescriptreact = { block = "/*%s*/" },
