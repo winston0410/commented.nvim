@@ -16,6 +16,7 @@ local opts = {
 		javascriptreact = { block = "/*%s*/" },
 		javascript = { block = "/*%s*/" },
 		typescript = { block = "/*%s*/" },
+		mint = { block = "/*%s*/" },
 		jsonc = { block = "/*%s*/" },
 		sql = { block = "/*%s*/" },
 		mysql = { block = "/*%s*/" },
