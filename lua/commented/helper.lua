@@ -18,7 +18,7 @@ local replacement_table = {
 local function escape_symbols(...)
 	local temp = {}
 	for _, symbol in ipairs({ ... }) do
-		local escaped = symbol:gsub(target_symbols, replacement_table)
+		local escaped = symbol:gsub(target_symbols, replacement_table):gsub("%s+", "")
 		table.insert(temp, escaped)
 	end
 	return unpack(temp)

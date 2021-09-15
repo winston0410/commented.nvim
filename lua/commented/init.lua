@@ -110,13 +110,12 @@ local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
 	return matched
 end
 
-local function toggle_inline_comment(lines, start_line, end_line, filetype)
+local function toggle_inline_comment(lines, start_line, end_line)
 	local should_comment = false
 	local uncomment_symbols, filetype = {}, vim.o.filetype
 	local cms = vim.api.nvim_buf_get_option(0, "commentstring")
 	-- exit early if no cms defined
 	if cms == "" then
-		print("check cms value", cms, type(cms), cms == "")
 		vim.api.nvim_err_writeln("Commented.nvim: No commentstring defined for this filetype.")
 		return
 	end
