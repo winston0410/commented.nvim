@@ -47,6 +47,7 @@ local opts = {
 		jison = { block = "/*%s*/" },
 		terraform = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
+		yuck = { block = "#|%s|#" },
 	},
 	-- commentstring used for commenting
 	lang_options = {},
@@ -225,11 +226,9 @@ local function toggle_comment(mode, line1, line2)
 				opts.prefer_block_comment
 				or opts.lang_options[filetype] and (opts.lang_options[filetype] or {}).prefer_block_comment
 			then
-
 				-- Decide what block symbol to use
 				local start_symbol, end_symbol
 				if opts.lang_options[filetype] and (opts.lang_options[filetype].cms or {}).block then
-
 					start_symbol, end_symbol = helper.escape_symbols(
 						helper.get_comment_wrap(opts.lang_options[filetype].cms.block)
 					)
