@@ -12,6 +12,7 @@ local opts = {
 		service = { inline = ";%s" },
 	},
 	block_cms = {
+		asciidoc = { block = "////%s////" },
 		imba = { block = "###%s###" },
 		typescriptreact = { block = "/*%s*/" },
 		javascriptreact = { block = "/*%s*/" },
