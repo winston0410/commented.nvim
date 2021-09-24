@@ -10,6 +10,7 @@ local opts = {
 		jproperties = { inline = "!%s" },
 		terraform = { inline = "//%s" },
 		service = { inline = ";%s" },
+		dosini = { inline = "#%s" },
 	},
 	block_cms = {
 		asciidoc = { block = "////%s////" },
