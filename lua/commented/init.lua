@@ -51,6 +51,7 @@ local opts = {
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 		yuck = { block = "#|%s|#" },
 		pony = { block = "/*%s*/" },
+		reason = { block = "/*%s*/" },
 	},
 	-- commentstring used for commenting
 	lang_options = {},
