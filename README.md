@@ -8,7 +8,7 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 ## Features
 
-- Provide sensible comment symbols default for **as much language as possible** (Always a WIP)
+- Provide sensible comment symbols default for **as much language as possible** (Always a WIP, [50+ right now](https://github.com/winston0410/commented.nvim/blob/master/lua/commented/init.lua#L7))
 
 - Handle multi-line block comment, both commenting and uncommenting
 
