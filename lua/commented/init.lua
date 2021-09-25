@@ -50,6 +50,7 @@ local opts = {
 		terraform = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 		yuck = { block = "#|%s|#" },
+		pony = { block = "/*%s*/" },
 	},
 	-- commentstring used for commenting
 	lang_options = {},
