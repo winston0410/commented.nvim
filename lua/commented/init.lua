@@ -16,6 +16,7 @@ local opts = {
 		asciidoc = { block = "////%s////" },
 		imba = { block = "###%s###" },
 		bicep = { block = "/*%s*/" },
+		solidity = { block = "/*%s*/" },
 		typescriptreact = { block = "/*%s*/" },
 		javascriptreact = { block = "/*%s*/" },
 		javascript = { block = "/*%s*/" },
