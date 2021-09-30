@@ -15,6 +15,7 @@ local opts = {
 	block_cms = {
 		asciidoc = { block = "////%s////" },
 		imba = { block = "###%s###" },
+		bicep = { block = "/*%s*/" },
 		typescriptreact = { block = "/*%s*/" },
 		javascriptreact = { block = "/*%s*/" },
 		javascript = { block = "/*%s*/" },
