@@ -52,6 +52,7 @@ local opts = {
 		terraform = { block = "/*%s*/" },
 		d = { block = "/*%s*/", alt_block = "/+%s+/" },
 		yuck = { block = "#|%s|#" },
+		racket = { block = "#|%s|#" },
 		pony = { block = "/*%s*/" },
 		reason = { block = "/*%s*/" },
 		rescript = { block = "/*%s*/" },
