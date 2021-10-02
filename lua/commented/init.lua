@@ -13,6 +13,7 @@ local opts = {
 		dosini = { inline = "#%s" },
 	},
 	block_cms = {
+        wast = { block = "(;%s;)" },
 		asciidoc = { block = "////%s////" },
 		imba = { block = "###%s###" },
 		bicep = { block = "/*%s*/" },
