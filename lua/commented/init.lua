@@ -263,13 +263,25 @@ local function toggle_comment(mode, line1, line2)
 	end
 end
 
+local function commented(prefix)
+    vim.api.nvim_set_option("opfunc", "Toggle_comment_normal")
+    --  Return the string for evaluation, so that we don't need to feed key
+    --  vim.api.nvim_feedkeys('g@', 'n')
+    return 'g@'
+end
+
+local function commented_line(prefix)
+    vim.api.nvim_set_option("opfunc", "Toggle_comment_normal")
+    return 'g@$'
+end
+
 local function setup(user_opts)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 	opts.inline_cms = vim.tbl_deep_extend("force", opts.inline_cms, opts.block_cms)
 	local supported_modes = { "n", "v" }
 	if opts.set_keybindings then
 		for _, mode in ipairs(supported_modes) do
-			vim.api.nvim_set_keymap(mode, opts.keybindings[mode], "Commented_n()", {
+			vim.api.nvim_set_keymap(mode, opts.keybindings[mode], "v:lua.require'commented'.commented()", {
 				expr = true,
 				silent = true,
 				noremap = true,
@@ -278,7 +290,7 @@ local function setup(user_opts)
 		vim.api.nvim_set_keymap(
 			"n",
 			opts.keybindings.nl,
-			"Commented_nl()",
+			"v:lua.require'commented'.commented_line()",
 			{ expr = true, silent = true, noremap = true }
 		)
 	end
@@ -291,4 +303,4 @@ local function setup(user_opts)
 	end
 end
 
-return { setup = setup, toggle_comment = toggle_comment }
+return { setup = setup, toggle_comment = toggle_comment, commented = commented, commented_line = commented_line }
