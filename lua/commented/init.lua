@@ -13,7 +13,7 @@ local opts = {
 		dosini = { inline = "#%s" },
 	},
 	block_cms = {
-        wast = { block = "(;%s;)" },
+		wast = { block = "(;%s;)" },
 		asciidoc = { block = "////%s////" },
 		imba = { block = "###%s###" },
 		bicep = { block = "/*%s*/" },
@@ -69,7 +69,9 @@ local opts = {
 local leading_space = "^%s*"
 local space_only = leading_space .. "$"
 
-local function commenting_lines(lines, start_line, end_line, start_symbol, end_symbol)
+local function commenting_lines(fn_opts)
+	local start_symbol, end_symbol = fn_opts.symbols[1] .. fn_opts.prefix, fn_opts.symbols[2]
+
 	local commented_lines = vim.tbl_map(function(line)
 		-- local pattern = opts.left_align_comment and leading_space or "([^%s])"
 		-- ([^%s*])
@@ -81,9 +83,9 @@ local function commenting_lines(lines, start_line, end_line, start_symbol, end_s
 		end
 
 		return commented_line
-	end, lines)
+	end, fn_opts.lines)
 
-	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, commented_lines)
+	vim.api.nvim_buf_set_lines(0, fn_opts.start_line, fn_opts.end_line, false, commented_lines)
 end
 
 local function clear_lines_symbols(lines, target_symbols)
@@ -121,7 +123,7 @@ local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
 	return matched
 end
 
-local function toggle_inline_comment(lines, start_line, end_line)
+local function toggle_inline_comment(fn_opts)
 	local should_comment = false
 	local uncomment_symbols, filetype = {}, vim.o.filetype
 	local cms = vim.api.nvim_buf_get_option(0, "commentstring")
@@ -133,7 +135,7 @@ local function toggle_inline_comment(lines, start_line, end_line)
 	local alt_cms = opts.inline_cms[filetype] or {}
 	local comment_patterns = vim.tbl_extend("force", { cms = cms }, alt_cms or {})
 
-	for _, line in ipairs(lines) do
+	for _, line in ipairs(fn_opts.lines) do
 		if not line:match(space_only) then
 			local matched = has_matching_pattern(line, comment_patterns, uncomment_symbols)
 			if not matched then
@@ -144,17 +146,18 @@ local function toggle_inline_comment(lines, start_line, end_line)
 	end
 
 	if should_comment then
-		local comment_start_symbol, comment_end_symbol
-		if (opts.lang_options[filetype] or {}).inline then
-			comment_start_symbol, comment_end_symbol = helper.escape_symbols(
-				helper.get_comment_wrap(opts.lang_options[filetype].inline)
-			)
-		else
-			comment_start_symbol, comment_end_symbol = helper.get_comment_wrap(cms)
-		end
-		commenting_lines(lines, start_line, end_line, comment_start_symbol, comment_end_symbol)
+		local cms_to_use = (opts.lang_options[filetype] or {}).inline and opts.lang_options[filetype].inline or cms
+		commenting_lines({
+			lines = fn_opts.lines,
+			start_line = fn_opts.start_line,
+			end_line = fn_opts.end_line,
+			prefix = fn_opts.prefix,
+			symbols = {
+				helper.escape_symbols(helper.get_comment_wrap(cms_to_use)),
+			},
+		})
 	else
-		uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
+		uncommenting_lines(fn_opts.lines, fn_opts.start_line, fn_opts.end_line, uncomment_symbols)
 	end
 end
 
@@ -199,7 +202,7 @@ end
 local has_start_symbol = has_symbol("^%s*", "")
 local has_end_symbol = has_symbol("", "%s*$")
 
-local function toggle_comment(mode, line1, line2)
+local function toggle_comment(mode, comment_prefix, line1, line2)
 	local start_line, end_line = helper.get_lines(mode, line1, line2)
 	local lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
 	local is_block, should_comment, insert_newlines = false, true, false
@@ -259,26 +262,30 @@ local function toggle_comment(mode, line1, line2)
 	if is_block then
 		toggle_block_comment(lines, start_line, end_line, block_symbols, should_comment, insert_newlines)
 	else
-		toggle_inline_comment(lines, start_line, end_line)
+		toggle_inline_comment({ lines = lines, start_line = start_line, end_line = end_line, prefix = comment_prefix })
 	end
 end
 
-local function opfunc ()
-    toggle_comment("n")
+local function opfunc(prefix)
+	return function()
+		toggle_comment("n", prefix)
+	end
 end
 
-local function commented()
-    _G.commented = opfunc
-    vim.api.nvim_set_option("opfunc", "v:lua.commented")
-    return 'g@'
-    --  Return the string for evaluation, so that we don't need to feed key
-    --  vim.api.nvim_feedkeys('g@', 'n')
+local function commented(prefix)
+	prefix = prefix or ""
+	_G.commented = opfunc(prefix)
+	vim.api.nvim_set_option("opfunc", "v:lua.commented")
+	return "g@"
+	--  Return the string for evaluation, so that we don't need to feed key
+	--  vim.api.nvim_feedkeys('g@', 'n')
 end
 
-local function commented_line()
-    _G.commented = opfunc
-    vim.api.nvim_set_option("opfunc", "v:lua.commented")
-    return 'g@$'
+local function commented_line(prefix)
+	prefix = prefix or ""
+	_G.commented = opfunc(prefix)
+	vim.api.nvim_set_option("opfunc", "v:lua.commented")
+	return "g@$"
 end
 
 local function setup(user_opts)
@@ -303,7 +310,9 @@ local function setup(user_opts)
 
 	if opts.ex_mode_cmd then
 		vim.api.nvim_exec(
-			"command! -range " .. opts.ex_mode_cmd .. " lua require('commented').toggle_comment('c', <line1>, <line2>)",
+			"command! -range "
+				.. opts.ex_mode_cmd
+				.. " lua require('commented').toggle_comment('c', '', <line1>, <line2>)",
 			true
 		)
 	end
