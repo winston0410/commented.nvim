@@ -263,15 +263,21 @@ local function toggle_comment(mode, line1, line2)
 	end
 end
 
-local function commented(prefix)
-    vim.api.nvim_set_option("opfunc", "Toggle_comment_normal")
-    --  Return the string for evaluation, so that we don't need to feed key
-    --  vim.api.nvim_feedkeys('g@', 'n')
-    return 'g@'
+local function opfunc ()
+    toggle_comment("n")
 end
 
-local function commented_line(prefix)
-    vim.api.nvim_set_option("opfunc", "Toggle_comment_normal")
+local function commented()
+    _G.commented = opfunc
+    vim.api.nvim_set_option("opfunc", "v:lua.commented")
+    return 'g@'
+    --  Return the string for evaluation, so that we don't need to feed key
+    --  vim.api.nvim_feedkeys('g@', 'n')
+end
+
+local function commented_line()
+    _G.commented = opfunc
+    vim.api.nvim_set_option("opfunc", "v:lua.commented")
     return 'g@$'
 end
 
