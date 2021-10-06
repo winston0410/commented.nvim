@@ -92,19 +92,20 @@ local function commenting_lines(fn_opts)
 	vim.api.nvim_buf_set_lines(0, fn_opts.start_line, fn_opts.end_line, false, commented_lines)
 end
 
-local function clear_lines_symbols(lines, target_symbols)
+local function clear_lines_symbols(fn_opts)
+	local prefix = fn_opts.prefix or ""
 	return helper.map(function(line, index)
 		if line:match(space_only) then
 			return line
 		end
-		local start_symbol, end_symbol = unpack(target_symbols[index])
+		local start_symbol, end_symbol = unpack(fn_opts.uncomment_symbols[index])
 		local pattern = opts.left_align_comment and opts.comment_padding or "%s*"
-		local cleaned_line = line:gsub(start_symbol .. pattern, "", 1)
+		local cleaned_line = line:gsub(start_symbol .. prefix .. pattern, "", 1)
 		if end_symbol ~= "" then
 			cleaned_line = cleaned_line:gsub("%s*" .. end_symbol, "")
 		end
 		return cleaned_line
-	end, lines)
+	end, fn_opts.lines)
 end
 
 local function uncommenting_lines(fn_opts)
@@ -113,7 +114,11 @@ local function uncommenting_lines(fn_opts)
 		fn_opts.start_line,
 		fn_opts.end_line,
 		false,
-		clear_lines_symbols(fn_opts.lines, fn_opts.uncomment_symbols)
+		clear_lines_symbols({
+			lines = fn_opts.lines,
+			uncomment_symbols = fn_opts.uncomment_symbols,
+			prefix = fn_opts.prefix,
+		})
 	)
 end
 
@@ -169,6 +174,7 @@ local function toggle_inline_comment(fn_opts)
 			lines = fn_opts.lines,
 			start_line = fn_opts.start_line,
 			end_line = fn_opts.end_line,
+			prefix = fn_opts.prefix,
 			uncomment_symbols = uncomment_symbols,
 		})
 	end
@@ -196,7 +202,10 @@ local function toggle_block_comment(lines, start_line, end_line, block_symbols, 
 
 		vim.api.nvim_buf_set_lines(0, start_line, end_line, false, lines)
 	else
-		lines[1], lines[#lines] = unpack(clear_lines_symbols({ lines[1], lines[#lines] }, block_symbols))
+		lines[1], lines[#lines] = unpack(
+			clear_lines_symbols({ lines = { lines[1], lines[#lines] }, uncomment_symbols = block_symbols })
+		)
+
 		-- If we have empty lines, we inserted newlines so delete them
 		if #lines[1] == 0 and #lines[#lines] == 0 then
 			table.remove(lines, 1)
@@ -333,4 +342,43 @@ local function setup(user_opts)
 	end
 end
 
-return { setup = setup, toggle_comment = toggle_comment, commented = commented, commented_line = commented_line }
+local codetags = {
+	fixme = function()
+		return commented("FIXME")
+	end,
+	fixme_line = function()
+		return commented_line("FIXME")
+	end,
+	todo = function()
+		return commented("TODO")
+	end,
+	todo_line = function()
+		return commented_line("TODO")
+	end,
+	bug = function()
+		return commented("BUG")
+	end,
+	bug_line = function()
+		return commented_line("BUG")
+	end,
+	note = function()
+		return commented("NOTE")
+	end,
+	note_line = function()
+		return commented_line("NOTE")
+	end,
+	wont_fix = function()
+		return commented("WONTFIX")
+	end,
+	wont_fix_line = function()
+		return commented_line("WONTFIX")
+	end,
+}
+
+return {
+	setup = setup,
+	toggle_comment = toggle_comment,
+	commented = commented,
+	commented_line = commented_line,
+	codetags = codetags,
+}
