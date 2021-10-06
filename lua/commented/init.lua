@@ -77,7 +77,11 @@ local function commenting_lines(fn_opts)
 		-- ([^%s*])
 		-- Make this a global option?
 		local pattern = "([^%s])"
-		local commented_line = line:gsub(pattern, (index == 1 and start_symbol ..fn_opts.prefix or start_symbol) .. opts.comment_padding .. "%1", 1)
+		local commented_line = line:gsub(
+			pattern,
+			(index == 1 and start_symbol .. fn_opts.prefix or start_symbol) .. opts.comment_padding .. "%1",
+			1
+		)
 		if end_symbol ~= "" then
 			commented_line = commented_line .. opts.comment_padding .. end_symbol
 		end
@@ -103,8 +107,14 @@ local function clear_lines_symbols(lines, target_symbols)
 	end, lines)
 end
 
-local function uncommenting_lines(lines, start_line, end_line, uncomment_symbols)
-	vim.api.nvim_buf_set_lines(0, start_line, end_line, false, clear_lines_symbols(lines, uncomment_symbols))
+local function uncommenting_lines(fn_opts)
+	vim.api.nvim_buf_set_lines(
+		0,
+		fn_opts.start_line,
+		fn_opts.end_line,
+		false,
+		clear_lines_symbols(fn_opts.lines, fn_opts.uncomment_symbols)
+	)
 end
 
 local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
@@ -155,7 +165,12 @@ local function toggle_inline_comment(fn_opts)
 			},
 		})
 	else
-		uncommenting_lines(fn_opts.lines, fn_opts.start_line, fn_opts.end_line, uncomment_symbols)
+		uncommenting_lines({
+			lines = fn_opts.lines,
+			start_line = fn_opts.start_line,
+			end_line = fn_opts.end_line,
+			uncomment_symbols = uncomment_symbols,
+		})
 	end
 end
 
@@ -288,8 +303,8 @@ end
 
 local function setup(user_opts)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
-    -- NOTE: For backward compatibility
-    opts.keybindings.x = opts.keybindings.v
+	-- NOTE: For backward compatibility
+	opts.keybindings.x = opts.keybindings.v
 	opts.inline_cms = vim.tbl_deep_extend("force", opts.inline_cms, opts.block_cms)
 	local supported_modes = { "n", "x" }
 	if opts.set_keybindings then
