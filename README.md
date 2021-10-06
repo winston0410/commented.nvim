@@ -6,6 +6,38 @@ This plugin uses `commentstring` and custom comment definition for accurately co
 
 ![normal mode demo](./gif/normal-mode-demo.gif)
 
+## Latest features
+
+### Codetags (6-10-2021)
+
+Use `commented.nvim` to toggle a comment with code tag. You can check all existing codetags [here](https://github.com/winston0410/commented.nvim/blob/632423912c87923c37cf81b4c23d5303e9ddec55/lua/commented/init.lua#L345), PR welcomed.
+
+```lua
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>ff",
+	"v:lua.require'commented'.codetags.fixme_line()",
+	{ expr = true, silent = true, noremap = true }
+)
+```
+
+You can also create a custom tag, using `commented` function:
+
+```lua
+local foo = function()
+    return commented("bar")
+end
+```
+
+```lua
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>d",
+	"v:lua.require'filename'.foo()",
+	{ expr = true, silent = true, noremap = true }
+)
+```
+
 ## Features
 
 - Provide sensible comment symbols default for **as much language as possible** (Always a WIP, [50+ right now](https://github.com/winston0410/commented.nvim/blob/master/lua/commented/init.lua#L7))
