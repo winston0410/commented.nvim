@@ -42,10 +42,19 @@ local function get_comment_wrap(cs)
 	return nil
 end
 
-local helper = {
+-- NOTE: vim.tbl_map doesn't provide an index in callback
+local function map(callback, list)
+    local updated = {}
+	for index, item in ipairs(list) do
+        updated[index] = callback(item, index)
+	end
+    return updated
+end
+
+return {
 	get_lines = get_lines,
 	get_comment_wrap = get_comment_wrap,
 	escape_symbols = escape_symbols,
+    map = map
 }
 
-return helper
