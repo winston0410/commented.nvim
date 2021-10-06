@@ -290,11 +290,13 @@ end
 
 local function setup(user_opts)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
+    -- NOTE: For backward compatibility
+    opts.keybindings.x = opts.keybindings.v
 	opts.inline_cms = vim.tbl_deep_extend("force", opts.inline_cms, opts.block_cms)
-	local supported_modes = { "n", "v" }
+	local supported_modes = { "n", "x" }
 	if opts.set_keybindings then
 		for _, mode in ipairs(supported_modes) do
-			vim.api.nvim_set_keymap(mode == "v" and "x" or mode, opts.keybindings[mode], "v:lua.require'commented'.commented()", {
+			vim.api.nvim_set_keymap(mode, opts.keybindings[mode], "v:lua.require'commented'.commented()", {
 				expr = true,
 				silent = true,
 				noremap = true,
