@@ -2,6 +2,8 @@ local helper = require("commented.helper")
 local opts = {
 	comment_padding = " ",
 	keybindings = { n = "<leader>c", v = "<leader>c", nl = "<leader>cc" },
+	-- NOTE: The key in this table should match the key of the codetags block
+	codetags_keybindings = {},
 	set_keybindings = true,
 	prefer_block_comment = false, -- Set it to true to automatically use block comment when multiple lines are selected
 	inline_cms = {
@@ -316,6 +318,7 @@ local function setup(user_opts)
 	opts.keybindings.x = opts.keybindings.v
 	opts.inline_cms = vim.tbl_deep_extend("force", opts.inline_cms, opts.block_cms)
 	local supported_modes = { "n", "x" }
+
 	if opts.set_keybindings then
 		for _, mode in ipairs(supported_modes) do
 			vim.api.nvim_set_keymap(mode, opts.keybindings[mode], "v:lua.require'commented'.commented()", {
@@ -339,6 +342,16 @@ local function setup(user_opts)
 				.. " lua require('commented').toggle_comment('c', '', <line1>, <line2>)",
 			true
 		)
+	end
+
+	for key, binding in pairs(opts.codetags_keybindings) do
+		for _, mode in ipairs(supported_modes) do
+			vim.api.nvim_set_keymap(mode, binding, "v:lua.require'commented'.codetags." .. key .. "()", {
+				expr = true,
+				silent = true,
+				noremap = true,
+			})
+		end
 	end
 end
 
