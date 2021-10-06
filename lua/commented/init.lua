@@ -70,14 +70,14 @@ local leading_space = "^%s*"
 local space_only = leading_space .. "$"
 
 local function commenting_lines(fn_opts)
-	local start_symbol, end_symbol = fn_opts.symbols[1] .. fn_opts.prefix, fn_opts.symbols[2]
+	local start_symbol, end_symbol = fn_opts.symbols[1], fn_opts.symbols[2]
 
-	local commented_lines = vim.tbl_map(function(line)
+	local commented_lines = helper.map(function(line, index)
 		-- local pattern = opts.left_align_comment and leading_space or "([^%s])"
 		-- ([^%s*])
 		-- Make this a global option?
 		local pattern = "([^%s])"
-		local commented_line = line:gsub(pattern, start_symbol .. opts.comment_padding .. "%1", 1)
+		local commented_line = line:gsub(pattern, (index == 1 and start_symbol ..fn_opts.prefix or start_symbol) .. opts.comment_padding .. "%1", 1)
 		if end_symbol ~= "" then
 			commented_line = commented_line .. opts.comment_padding .. end_symbol
 		end
