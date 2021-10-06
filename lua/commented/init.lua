@@ -294,7 +294,7 @@ local function setup(user_opts)
 	local supported_modes = { "n", "v" }
 	if opts.set_keybindings then
 		for _, mode in ipairs(supported_modes) do
-			vim.api.nvim_set_keymap(mode, opts.keybindings[mode], "v:lua.require'commented'.commented()", {
+			vim.api.nvim_set_keymap(mode == "v" and "x" or mode, opts.keybindings[mode], "v:lua.require'commented'.commented()", {
 				expr = true,
 				silent = true,
 				noremap = true,
