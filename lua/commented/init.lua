@@ -89,8 +89,7 @@ local function commenting_lines(fn_opts)
 end
 
 local function clear_lines_symbols(lines, target_symbols)
-	local index = 1
-	return vim.tbl_map(function(line)
+	return helper.map(function(line, index)
 		if line:match(space_only) then
 			return line
 		end
@@ -100,7 +99,6 @@ local function clear_lines_symbols(lines, target_symbols)
 		if end_symbol ~= "" then
 			cleaned_line = cleaned_line:gsub("%s*" .. end_symbol, "")
 		end
-		index = index + 1
 		return cleaned_line
 	end, lines)
 end
