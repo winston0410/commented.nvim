@@ -21,7 +21,7 @@ vim.api.nvim_set_keymap(
 )
 ```
 
-**No default** is provided for the codetags binding. You can enable them like this or map them manually with `vim.api.nvim_set_keymap`
+**No default** is provided for the codetags binding. You can enable them like this or map them manually with `vim.api.nvim_set_keymap`. The key in `codetags_keybindings` has to match the key in [`codetags` table](https://github.com/winston0410/commented.nvim/blob/4dc89a654ac8ba3d090568ebfac173f376f2397c/lua/commented/init.lua#L365):
 
 ```lua
 -- packer.nvim example
