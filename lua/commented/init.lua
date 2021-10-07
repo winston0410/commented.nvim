@@ -102,7 +102,11 @@ local function clear_lines_symbols(fn_opts)
 		end
 		local start_symbol, end_symbol = unpack(fn_opts.uncomment_symbols[index])
 		local pattern = opts.left_align_comment and opts.comment_padding or "%s*"
-		local cleaned_line = line:gsub(start_symbol .. prefix .. pattern, "", 1)
+		local cleaned_line = line:gsub(
+			(index == 1 and start_symbol .. prefix .. pattern or start_symbol .. pattern),
+			"",
+			1
+		)
 		if end_symbol ~= "" then
 			cleaned_line = cleaned_line:gsub("%s*" .. end_symbol, "")
 		end
