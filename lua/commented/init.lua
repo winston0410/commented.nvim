@@ -128,6 +128,7 @@ local function uncommenting_lines(fn_opts)
 	)
 end
 
+--NOTE Insert uncommenting_symbols while check for a match
 local function has_matching_pattern(line, comment_patterns, uncomment_symbols)
 	local matched = false
 	for _, pattern in pairs(comment_patterns) do
@@ -161,6 +162,8 @@ local function toggle_inline_comment(fn_opts)
 				should_comment = true
 				break
 			end
+		else
+            table.insert(uncomment_symbols, { "", "" })
 		end
 	end
 
