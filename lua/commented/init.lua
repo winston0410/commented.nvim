@@ -393,6 +393,12 @@ local codetags = {
 	wont_fix_line = function()
 		return commented_line("WONTFIX")
 	end,
+	ref = function()
+		return commented("REF")
+	end,
+	ref_line = function()
+		return commented_line("REF")
+	end,
 }
 
 return {
