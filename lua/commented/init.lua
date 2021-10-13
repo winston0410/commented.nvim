@@ -163,19 +163,21 @@ local function toggle_inline_comment(fn_opts)
 				break
 			end
 		else
-            table.insert(uncomment_symbols, { "", "" })
+			table.insert(uncomment_symbols, { "", "" })
 		end
 	end
 
 	if should_comment then
-		local cms_to_use = (opts.lang_options[filetype] or {}).inline and opts.lang_options[filetype].inline or cms
+		local cms_to_use = (opts.lang_options[filetype] or {}).inline
+				and helper.escape_symbols(opts.lang_options[filetype].inline)
+			or cms
 		commenting_lines({
 			lines = fn_opts.lines,
 			start_line = fn_opts.start_line,
 			end_line = fn_opts.end_line,
 			prefix = fn_opts.prefix,
 			symbols = {
-				helper.escape_symbols(helper.get_comment_wrap(cms_to_use)),
+				helper.get_comment_wrap(cms_to_use),
 			},
 		})
 	else
