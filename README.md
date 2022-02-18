@@ -91,7 +91,7 @@ vim.api.nvim_set_keymap(
 
 ![normal mode demo](./gif/normal-mode-demo.gif)
 
-### Commenting in virtual line mode
+### Commenting in visual line mode
 
 ![visual-mode-demo](./gif/visual-mode-demo.gif)
 
